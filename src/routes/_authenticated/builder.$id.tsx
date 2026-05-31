@@ -38,7 +38,7 @@ function Builder() {
         template: data.template as TemplateKey,
         visibility: data.visibility as "public" | "private",
         config: { ...DEFAULT_CONFIG, ...(data.config as object) },
-        items: data.items as FaqDocument["items"],
+        items: data.items as unknown as FaqDocument["items"],
       });
     })();
   }, [id]);
@@ -52,8 +52,8 @@ function Builder() {
         title: doc.title,
         template: doc.template,
         visibility: doc.visibility,
-        config: doc.config,
-        items: doc.items,
+        config: doc.config as unknown as Record<string, unknown>,
+        items: doc.items as unknown as Record<string, unknown>[],
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);

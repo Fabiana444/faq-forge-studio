@@ -50,8 +50,8 @@ function Dashboard() {
         title: "Minha FAQ",
         template: "categorized",
         visibility: "public",
-        config: DEFAULT_CONFIG,
-        items: DEFAULT_ITEMS,
+        config: DEFAULT_CONFIG as unknown as Record<string, unknown>,
+        items: DEFAULT_ITEMS as unknown as Record<string, unknown>[],
       })
       .select("id")
       .single();
