@@ -1,0 +1,138 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { AppHeader } from "@/components/AppHeader";
+import { Button } from "@/components/ui/button";
+import { Plus, FileText, Lock, Globe, Trash2 } from "lucide-react";
+import { DEFAULT_CONFIG, DEFAULT_ITEMS, TEMPLATE_META } from "@/lib/faq-types";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => ({ meta: [{ title: "Minhas FAQs — FAQ Forge" }] }),
+  component: Dashboard,
+});
+
+interface Row {
+  id: string;
+  title: string;
+  template: string;
+  visibility: string;
+  updated_at: string;
+}
+
+function Dashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("faqs")
+      .select("id,title,template,visibility,updated_at")
+      .order("updated_at", { ascending: false });
+    if (error) toast.error(error.message);
+    setRows((data as Row[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const create = async () => {
+    const { data, error } = await supabase
+      .from("faqs")
+      .insert({
+        user_id: user!.id,
+        title: "Minha FAQ",
+        template: "categorized",
+        visibility: "public",
+        config: DEFAULT_CONFIG,
+        items: DEFAULT_ITEMS,
+      })
+      .select("id")
+      .single();
+    if (error) return toast.error(error.message);
+    navigate({ to: "/builder/$id", params: { id: data.id } });
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Excluir esta FAQ?")) return;
+    const { error } = await supabase.from("faqs").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Excluída");
+    load();
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+      <main className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold">Minhas FAQs</h1>
+            <p className="text-sm text-muted-foreground">
+              Gerencie e edite suas perguntas frequentes
+            </p>
+          </div>
+          <Button onClick={create}>
+            <Plus className="mr-2 h-4 w-4" /> Nova FAQ
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="py-20 text-center text-muted-foreground">Carregando…</div>
+        ) : rows.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border p-16 text-center">
+            <FileText className="mx-auto h-10 w-10 text-muted-foreground" />
+            <h3 className="mt-4 font-semibold">Nenhuma FAQ ainda</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Crie sua primeira FAQ em segundos
+            </p>
+            <Button className="mt-4" onClick={create}>
+              <Plus className="mr-2 h-4 w-4" /> Criar agora
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {rows.map((r) => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between rounded-xl border border-border bg-card p-4 transition hover:shadow-[var(--shadow-soft)]"
+              >
+                <Link
+                  to="/builder/$id"
+                  params={{ id: r.id }}
+                  className="flex-1"
+                >
+                  <div className="font-medium">{r.title}</div>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                    <span>{TEMPLATE_META[r.template as keyof typeof TEMPLATE_META]?.name || r.template}</span>
+                    <span className="inline-flex items-center gap-1">
+                      {r.visibility === "private" ? (
+                        <Lock className="h-3 w-3" />
+                      ) : (
+                        <Globe className="h-3 w-3" />
+                      )}
+                      {r.visibility}
+                    </span>
+                  </div>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => remove(r.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
