@@ -52,8 +52,8 @@ function Builder() {
         title: doc.title,
         template: doc.template,
         visibility: doc.visibility,
-        config: doc.config as unknown as Record<string, unknown>,
-        items: doc.items as unknown as Record<string, unknown>[],
+        config: doc.config as any,
+        items: doc.items as any,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);
