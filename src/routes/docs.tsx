@@ -32,7 +32,7 @@ function Docs() {
             Ferramenta geradora de FAQs sanfona inteligentes, com 5 modelos
             personalizáveis, autenticação e controle de privacidade.
           </p>
-          <a href="/faq-forge-docs.pdf" download>
+          <a href="/docspace-docs.pdf" download>
             <Button className="mt-5" variant="outline">
               <Download className="mr-2 h-4 w-4" /> Baixar PDF
             </Button>
