@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "FAQ Forge — Gerador inteligente de FAQs sanfona" },
+      { title: "Docspace.tec — Gerador inteligente de FAQs sanfona" },
       {
         name: "description",
         content:
           "Crie FAQs em formato sanfona com 5 modelos personalizáveis: cores, logo, categorias, compartilhamento e acesso privado.",
       },
-      { name: "author", content: "FAQ Forge" },
-      { property: "og:title", content: "FAQ Forge" },
+      { name: "author", content: "Docspace.tec" },
+      { property: "og:title", content: "Docspace.tec" },
       {
         property: "og:description",
         content: "Gerador de FAQs inteligente com 5 modelos sanfona.",

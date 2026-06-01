@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/docs")({
   head: () => ({
     meta: [
-      { title: "Documentação — FAQ Forge" },
+      { title: "Documentação — Docspace.tec" },
       {
         name: "description",
         content:
-          "Guia completo do FAQ Forge: modelos, personalização, autenticação e API.",
+          "Guia completo do Docspace.tec: modelos, personalização, autenticação e API.",
       },
     ],
   }),
@@ -27,7 +27,7 @@ function Docs() {
           <span className="text-xs uppercase tracking-wider text-primary">
             Documentação v1.0
           </span>
-          <h1 className="mt-2 text-4xl font-bold tracking-tight">FAQ Forge</h1>
+          <h1 className="mt-2 text-4xl font-bold tracking-tight">Docspace.tec</h1>
           <p className="mt-3 text-lg text-muted-foreground">
             Ferramenta geradora de FAQs sanfona inteligentes, com 5 modelos
             personalizáveis, autenticação e controle de privacidade.
@@ -41,7 +41,7 @@ function Docs() {
 
         <Section title="1. Visão Geral">
           <p>
-            O <b>FAQ Forge</b> é uma ferramenta web que permite criar, customizar
+            O <b>Docspace.tec</b> é uma ferramenta web que permite criar, customizar
             e compartilhar perguntas frequentes em formato sanfona (accordion).
             Cada FAQ é salva na sua conta e recebe uma URL pública compartilhável.
           </p>

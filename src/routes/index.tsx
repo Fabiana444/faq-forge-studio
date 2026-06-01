@@ -9,7 +9,7 @@ import { ArrowRight, Layers, Share2, Image, Lock, Palette } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "FAQ Forge — Crie FAQs sanfona personalizadas" },
+      { title: "Docspace.tec — Crie FAQs sanfona personalizadas" },
       {
         name: "description",
         content:
@@ -24,7 +24,7 @@ const previewItems = [
   {
     id: "1",
     category: "Geral",
-    question: "Como funciona o FAQ Forge?",
+    question: "Como funciona o Docspace.tec?",
     answer:
       "Escolha um modelo, personalize cores e conteúdo, e publique. Tudo no navegador.",
   },
@@ -135,7 +135,7 @@ function Index() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        Feito com <span className="text-primary">♥</span> · FAQ Forge
+        Feito com <span className="text-primary">♥</span> · Docspace.tec
       </footer>
     </div>
   );

@@ -9,7 +9,7 @@ import { DEFAULT_CONFIG, DEFAULT_ITEMS, TEMPLATE_META } from "@/lib/faq-types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Minhas FAQs — FAQ Forge" }] }),
+  head: () => ({ meta: [{ title: "Minhas FAQs — Docspace.tec" }] }),
   component: Dashboard,
 });
 
