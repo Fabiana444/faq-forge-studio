@@ -13,8 +13,8 @@ import { Sparkles } from "lucide-react";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — FAQ Forge" },
-      { name: "description", content: "Faça login ou crie sua conta no FAQ Forge." },
+      { title: "Entrar — Docspace.tec" },
+      { name: "description", content: "Faça login ou crie sua conta no Docspace.tec." },
     ],
   }),
   component: AuthPage,

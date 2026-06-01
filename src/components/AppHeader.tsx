@@ -12,7 +12,7 @@ export function AppHeader() {
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-[image:var(--gradient-hero)] text-primary-foreground">
             <Sparkles className="h-4 w-4" />
           </span>
-          <span>FAQ Forge</span>
+          <span>Docspace.tec</span>
         </Link>
         <nav className="flex items-center gap-1 text-sm">
           <Link to="/docs" className="px-3 py-2 text-muted-foreground hover:text-foreground">

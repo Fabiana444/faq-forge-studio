@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/builder/$id")({
-  head: () => ({ meta: [{ title: "Editor — FAQ Forge" }] }),
+  head: () => ({ meta: [{ title: "Editor — Docspace.tec" }] }),
   component: Builder,
 });
 
