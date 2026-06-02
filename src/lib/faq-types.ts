@@ -5,21 +5,29 @@ export type TemplateKey =
   | "private"
   | "branded";
 
+export type CodeLayout = "block" | "inline" | "terminal";
+export type CodeTheme = "dark" | "light";
+
 export interface FaqItem {
   id: string;
   category?: string;
   question: string;
+  /** Pode conter HTML simples: <b>, <i>, <u>, <a href>. */
   answer: string;
   imageUrl?: string;
+  videoUrl?: string;
+  audioUrl?: string;
   code?: string;
   codeLang?: string;
+  codeLayout?: CodeLayout;
+  codeTheme?: CodeTheme;
 }
 
 export interface FaqConfig {
-  accentColor: string;       // primary accent (oklch/hex)
-  questionColor: string;     // question text color
-  answerColor: string;       // answer text color
-  backgroundColor: string;   // surface background
+  accentColor: string;
+  questionColor: string;
+  answerColor: string;
+  backgroundColor: string;
   borderColor: string;
   logoUrl?: string;
   brandName?: string;
@@ -46,17 +54,17 @@ export const TEMPLATE_META: Record<
   shareable: {
     name: "Compartilhável",
     description:
-      "Cada pergunta tem botões de copiar e compartilhar ao lado da resposta.",
+      "Cada pergunta tem botões de copiar link, copiar conteúdo e compartilhar por E-mail ou WhatsApp.",
   },
   "rich-media": {
     name: "Mídia Rica",
     description:
-      "Suporta imagens e blocos de código dentro das respostas — ideal para docs técnicos.",
+      "Suporta imagens, vídeos, áudios e blocos de código — ideal para docs técnicos.",
   },
   private: {
     name: "Acesso Restrito",
     description:
-      "Perguntas marcadas como privadas aparecem com cadeado para visitantes não logados.",
+      "Todas as perguntas aparecem, mas o conteúdo de perguntas marcadas como privadas só é revelado após login.",
   },
   branded: {
     name: "Marca Personalizada",
@@ -96,4 +104,53 @@ export const DEFAULT_ITEMS: FaqItem[] = [
     answer:
       "Use o botão Compartilhar para copiar o link público ou exporte o HTML.",
   },
+];
+
+/** Linguagens de código suportadas no modelo Mídia Rica. */
+export const CODE_LANGUAGES: { value: string; label: string }[] = [
+  { value: "html", label: "HTML" },
+  { value: "css", label: "CSS" },
+  { value: "scss", label: "SCSS / Sass" },
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "jsx", label: "JSX" },
+  { value: "tsx", label: "TSX" },
+  { value: "json", label: "JSON" },
+  { value: "yaml", label: "YAML" },
+  { value: "xml", label: "XML" },
+  { value: "markdown", label: "Markdown" },
+  { value: "python", label: "Python" },
+  { value: "java", label: "Java" },
+  { value: "kotlin", label: "Kotlin" },
+  { value: "swift", label: "Swift" },
+  { value: "c", label: "C" },
+  { value: "cpp", label: "C++" },
+  { value: "csharp", label: "C#" },
+  { value: "go", label: "Go" },
+  { value: "rust", label: "Rust" },
+  { value: "ruby", label: "Ruby" },
+  { value: "php", label: "PHP" },
+  { value: "sql", label: "SQL" },
+  { value: "bash", label: "Bash / Shell" },
+  { value: "powershell", label: "PowerShell" },
+  { value: "dockerfile", label: "Dockerfile" },
+  { value: "graphql", label: "GraphQL" },
+  { value: "lua", label: "Lua" },
+  { value: "perl", label: "Perl" },
+  { value: "r", label: "R" },
+  { value: "dart", label: "Dart" },
+  { value: "elixir", label: "Elixir" },
+  { value: "scala", label: "Scala" },
+  { value: "haskell", label: "Haskell" },
+  { value: "solidity", label: "Solidity" },
+  { value: "toml", label: "TOML" },
+  { value: "ini", label: "INI" },
+  { value: "diff", label: "Diff" },
+  { value: "plaintext", label: "Texto puro" },
+];
+
+export const CODE_LAYOUTS: { value: CodeLayout; label: string }[] = [
+  { value: "block", label: "Bloco padrão" },
+  { value: "inline", label: "Compacto / inline" },
+  { value: "terminal", label: "Terminal" },
 ];

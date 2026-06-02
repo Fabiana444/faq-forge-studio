@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { ChevronDown, Lock } from "lucide-react";
+import { ChevronDown, Lock, LogIn } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
+import { RichText } from "@/components/RichText";
 
 /**
- * Itens cuja category começa com "🔒" ou contém "private" são restritos.
- * Quando o visitante não está logado eles aparecem como cadeado.
+ * Acesso Restrito:
+ * - Todas as perguntas aparecem para qualquer visitante.
+ * - Itens com category começando com "🔒" ou contendo "private" são restritos:
+ *   ao expandir, mostram um aviso "Faça login para acessar" com botão de login.
  */
 export function PrivateFaq({
   items,
@@ -23,21 +20,19 @@ export function PrivateFaq({
   isAuthenticated: boolean;
 }) {
   return (
-    <TooltipProvider delayDuration={150}>
-      <div
-        className="space-y-3 rounded-2xl p-6"
-        style={{ background: config.backgroundColor }}
-      >
-        {items.map((it) => {
-          const locked = isPrivate(it) && !isAuthenticated;
-          return locked ? (
-            <LockedItem key={it.id} item={it} config={config} />
-          ) : (
-            <OpenItem key={it.id} item={it} config={config} />
-          );
-        })}
-      </div>
-    </TooltipProvider>
+    <div
+      className="space-y-3 rounded-2xl p-6"
+      style={{ background: config.backgroundColor }}
+    >
+      {items.map((it) => (
+        <Item
+          key={it.id}
+          item={it}
+          config={config}
+          locked={isPrivate(it) && !isAuthenticated}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -46,7 +41,15 @@ const isPrivate = (it: FaqItem) =>
   it.category?.startsWith("🔒") ||
   false;
 
-function OpenItem({ item, config }: { item: FaqItem; config: FaqConfig }) {
+function Item({
+  item,
+  config,
+  locked,
+}: {
+  item: FaqItem;
+  config: FaqConfig;
+  locked: boolean;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div
@@ -57,7 +60,11 @@ function OpenItem({ item, config }: { item: FaqItem; config: FaqConfig }) {
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
       >
-        <span className="font-medium" style={{ color: config.questionColor }}>
+        <span
+          className="flex items-center gap-2 font-medium"
+          style={{ color: config.questionColor }}
+        >
+          {locked && <Lock className="h-3.5 w-3.5 opacity-70" />}
           {item.question}
         </span>
         <ChevronDown
@@ -69,36 +76,42 @@ function OpenItem({ item, config }: { item: FaqItem; config: FaqConfig }) {
         />
       </button>
       {open && (
-        <div
-          className="px-5 pb-5 text-sm leading-relaxed"
-          style={{ color: config.answerColor }}
-        >
-          {item.answer}
+        <div className="px-5 pb-5">
+          {locked ? (
+            <div
+              className="flex flex-col items-start gap-3 rounded-lg border border-dashed p-4 text-sm"
+              style={{
+                borderColor: config.borderColor,
+                color: config.answerColor,
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Lock
+                  className="h-4 w-4"
+                  style={{ color: config.accentColor }}
+                />
+                <strong style={{ color: config.questionColor }}>
+                  Conteúdo protegido
+                </strong>
+              </div>
+              <p>Faça login para acessar esta resposta.</p>
+              <Link
+                to="/auth"
+                className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium text-white transition hover:opacity-90"
+                style={{ background: config.accentColor }}
+              >
+                <LogIn className="h-3.5 w-3.5" /> Fazer login
+              </Link>
+            </div>
+          ) : (
+            <RichText
+              html={item.answer}
+              className="text-sm leading-relaxed"
+              style={{ color: config.answerColor }}
+            />
+          )}
         </div>
       )}
     </div>
-  );
-}
-
-function LockedItem({ item, config }: { item: FaqItem; config: FaqConfig }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link
-          to="/auth"
-          className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl border border-dashed px-5 py-4 text-left opacity-80 transition hover:opacity-100"
-          style={{ borderColor: config.borderColor }}
-        >
-          <span
-            className="font-medium blur-[3px] select-none"
-            style={{ color: config.questionColor }}
-          >
-            {item.question}
-          </span>
-          <Lock className="h-4 w-4" style={{ color: config.accentColor }} />
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent>Faça login para acessar a FAQ</TooltipContent>
-    </Tooltip>
   );
 }
