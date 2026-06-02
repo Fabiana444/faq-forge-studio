@@ -8,11 +8,14 @@ import {
   ExternalLink,
   Code2,
   Image as ImageIcon,
+  Video,
+  Music,
+  Pencil,
+  Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,8 +24,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { FaqRenderer } from "@/components/FaqRenderer";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { FaqRenderer } from "@/components/FaqRenderer";
+import { RichTextToolbar } from "@/components/RichTextToolbar";
+import {
+  CODE_LANGUAGES,
+  CODE_LAYOUTS,
+  type CodeLayout,
+  type CodeTheme,
   type FaqDocument,
   type FaqItem,
   type TemplateKey,
@@ -61,7 +77,6 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-      {/* Editor panel */}
       <aside className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-soft)]">
         <div className="space-y-2">
           <Label htmlFor="title">Título da FAQ</Label>
@@ -129,81 +144,16 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
 
         {activeTab === "content" ? (
           <div className="space-y-3">
+            {doc.template === "rich-media" && <RichMediaHelp />}
             {doc.items.map((it, i) => (
-              <div
+              <ItemCard
                 key={it.id}
-                className="space-y-2 rounded-lg border border-border p-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    #{i + 1}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeItem(it.id)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-                {(doc.template === "categorized" ||
-                  doc.template === "private") && (
-                  <Input
-                    placeholder="Categoria"
-                    value={it.category || ""}
-                    onChange={(e) =>
-                      updateItem(it.id, { category: e.target.value })
-                    }
-                  />
-                )}
-                <Input
-                  placeholder="Pergunta"
-                  value={it.question}
-                  onChange={(e) =>
-                    updateItem(it.id, { question: e.target.value })
-                  }
-                />
-                <Textarea
-                  placeholder="Resposta"
-                  value={it.answer}
-                  rows={3}
-                  onChange={(e) =>
-                    updateItem(it.id, { answer: e.target.value })
-                  }
-                />
-                {doc.template === "rich-media" && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="URL da imagem (opcional)"
-                        value={it.imageUrl || ""}
-                        onChange={(e) =>
-                          updateItem(it.id, { imageUrl: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Code2 className="h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Linguagem (ex: typescript)"
-                        value={it.codeLang || ""}
-                        onChange={(e) =>
-                          updateItem(it.id, { codeLang: e.target.value })
-                        }
-                      />
-                    </div>
-                    <Textarea
-                      placeholder="Bloco de código (opcional)"
-                      value={it.code || ""}
-                      rows={3}
-                      onChange={(e) =>
-                        updateItem(it.id, { code: e.target.value })
-                      }
-                    />
-                  </>
-                )}
-              </div>
+                index={i}
+                item={it}
+                template={doc.template}
+                onChange={(patch) => updateItem(it.id, patch)}
+                onRemove={() => removeItem(it.id)}
+              />
             ))}
             <Button variant="outline" className="w-full" onClick={addItem}>
               <Plus className="mr-2 h-4 w-4" /> Adicionar pergunta
@@ -291,7 +241,6 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
         </div>
       </aside>
 
-      {/* Preview */}
       <div className="rounded-2xl border border-border bg-[image:var(--gradient-subtle)] p-6 shadow-[var(--shadow-soft)]">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{doc.title}</h2>
@@ -306,6 +255,257 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
           isAuthenticated={false}
         />
       </div>
+    </div>
+  );
+}
+
+/* ---------------- Item card ---------------- */
+
+function ItemCard({
+  item,
+  index,
+  template,
+  onChange,
+  onRemove,
+}: {
+  item: FaqItem;
+  index: number;
+  template: TemplateKey;
+  onChange: (patch: Partial<FaqItem>) => void;
+  onRemove: () => void;
+}) {
+  const showCategory = template === "categorized" || template === "private";
+  const showMedia = template === "rich-media";
+
+  return (
+    <div className="space-y-2 rounded-lg border border-border p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">
+          #{index + 1}
+        </span>
+        <div className="flex items-center gap-1">
+          <EditDialog
+            item={item}
+            template={template}
+            onChange={onChange}
+          />
+          <Button variant="ghost" size="sm" onClick={onRemove} title="Excluir">
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+      {showCategory && (
+        <Input
+          placeholder="Categoria (use 🔒 no início para travar)"
+          value={item.category || ""}
+          onChange={(e) => onChange({ category: e.target.value })}
+        />
+      )}
+      <Input
+        placeholder="Pergunta"
+        value={item.question}
+        onChange={(e) => onChange({ question: e.target.value })}
+      />
+      <RichTextToolbar
+        value={item.answer}
+        onChange={(v) => onChange({ answer: v })}
+        placeholder="Resposta (use a barra para negrito, itálico, sublinhado e link)"
+        rows={3}
+      />
+      {showMedia && (
+        <div className="space-y-2 rounded-md border border-dashed border-border p-2">
+          <MediaInput
+            icon={<ImageIcon className="h-4 w-4 text-muted-foreground" />}
+            placeholder="URL da imagem"
+            value={item.imageUrl || ""}
+            onChange={(v) => onChange({ imageUrl: v })}
+          />
+          <MediaInput
+            icon={<Video className="h-4 w-4 text-muted-foreground" />}
+            placeholder="URL de vídeo (YouTube, Vimeo ou .mp4)"
+            value={item.videoUrl || ""}
+            onChange={(v) => onChange({ videoUrl: v })}
+          />
+          <MediaInput
+            icon={<Music className="h-4 w-4 text-muted-foreground" />}
+            placeholder="URL de áudio (.mp3, .wav, .ogg)"
+            value={item.audioUrl || ""}
+            onChange={(v) => onChange({ audioUrl: v })}
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-[11px] uppercase text-muted-foreground">
+                Linguagem
+              </Label>
+              <Select
+                value={item.codeLang || "plaintext"}
+                onValueChange={(v) => onChange({ codeLang: v })}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {CODE_LANGUAGES.map((l) => (
+                    <SelectItem key={l.value} value={l.value}>
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[11px] uppercase text-muted-foreground">
+                Layout
+              </Label>
+              <Select
+                value={item.codeLayout || "block"}
+                onValueChange={(v) =>
+                  onChange({ codeLayout: v as CodeLayout })
+                }
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CODE_LAYOUTS.map((l) => (
+                    <SelectItem key={l.value} value={l.value}>
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-2 rounded-md border border-border p-2">
+            <Label className="flex items-center gap-2 text-xs">
+              <Code2 className="h-3.5 w-3.5" />
+              Tema escuro do código
+            </Label>
+            <Switch
+              checked={(item.codeTheme || "dark") === "dark"}
+              onCheckedChange={(v) =>
+                onChange({ codeTheme: (v ? "dark" : "light") as CodeTheme })
+              }
+            />
+          </div>
+          <Textarea
+            placeholder="Bloco de código (opcional)"
+            value={item.code || ""}
+            rows={3}
+            onChange={(e) => onChange({ code: e.target.value })}
+            className="font-mono text-xs"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MediaInput({
+  icon,
+  placeholder,
+  value,
+  onChange,
+}: {
+  icon: React.ReactNode;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      {icon}
+      <Input
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
+/* ---------------- Edit dialog ---------------- */
+
+function EditDialog({
+  item,
+  template,
+  onChange,
+}: {
+  item: FaqItem;
+  template: TemplateKey;
+  onChange: (patch: Partial<FaqItem>) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm" title="Editar em foco">
+          <Pencil className="h-3.5 w-3.5" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Editar pergunta</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          {(template === "categorized" || template === "private") && (
+            <div className="space-y-1.5">
+              <Label>Categoria</Label>
+              <Input
+                value={item.category || ""}
+                onChange={(e) => onChange({ category: e.target.value })}
+              />
+            </div>
+          )}
+          <div className="space-y-1.5">
+            <Label>Pergunta</Label>
+            <Input
+              value={item.question}
+              onChange={(e) => onChange({ question: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Resposta</Label>
+            <RichTextToolbar
+              value={item.answer}
+              onChange={(v) => onChange({ answer: v })}
+              rows={8}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={() => setOpen(false)}>Concluir</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ---------------- Helpers ---------------- */
+
+function RichMediaHelp() {
+  return (
+    <div className="space-y-1 rounded-lg border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5 font-medium text-foreground">
+        <Info className="h-3.5 w-3.5" /> Mídias suportadas
+      </div>
+      <p>
+        <strong>Imagem:</strong> .jpg, .png, .webp, .gif, .svg — recomendado até
+        2&nbsp;MB e 1600&nbsp;px de largura.
+      </p>
+      <p>
+        <strong>Vídeo:</strong> links do YouTube/Vimeo ou arquivos .mp4 / .webm
+        / .ogg — recomendado até 50&nbsp;MB.
+      </p>
+      <p>
+        <strong>Áudio:</strong> .mp3, .wav, .ogg, .m4a — recomendado até
+        20&nbsp;MB.
+      </p>
+      <p>
+        <strong>Código:</strong> escolha a linguagem (HTML, CSS, JS, TS,
+        Python, etc.), o layout (bloco, inline ou terminal) e o tema (claro ou
+        escuro).
+      </p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
+import { RichText } from "@/components/RichText";
 
 export function CategorizedFaq({
   items,
@@ -66,12 +67,11 @@ function Item({ item, config }: { item: FaqItem; config: FaqConfig }) {
         />
       </button>
       {open && (
-        <div
+        <RichText
+          html={item.answer}
           className="px-5 pb-5 text-sm leading-relaxed"
           style={{ color: config.answerColor }}
-        >
-          {item.answer}
-        </div>
+        />
       )}
     </div>
   );
