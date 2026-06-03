@@ -14,7 +14,7 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/faq/$id")({
-  head: () => ({ meta: [{ title: "FAQ — Docspace.tec" }] }),
+  head: () => ({ meta: [{ title: "FAQ — DocSpace.tec" }] }),
   component: PublicFaq,
 });
 
