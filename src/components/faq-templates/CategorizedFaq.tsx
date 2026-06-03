@@ -25,31 +25,50 @@ export function CategorizedFaq({
       className="space-y-8 rounded-2xl p-6"
       style={{ background: config.backgroundColor }}
     >
-      {groups.map(([cat, list]) => (
-        <section key={cat}>
-          <h3
-            className="mb-3 inline-block rounded-full px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-white"
-            style={{ background: config.accentColor }}
-          >
-            {cat}
-          </h3>
-          <div className="space-y-2">
-            {list.map((it) => (
-              <Item key={it.id} item={it} config={config} />
-            ))}
-          </div>
-        </section>
-      ))}
+      {groups.map(([cat, list]) => {
+        const cc = config.categoryColors?.[cat] || {};
+        return (
+          <section key={cat}>
+            <h3
+              className="mb-3 inline-block rounded-full px-4 py-1.5 text-sm font-semibold uppercase tracking-wide"
+              style={{
+                background: cc.bg || config.accentColor,
+                color: cc.text || "#ffffff",
+              }}
+            >
+              {cat}
+            </h3>
+            <div className="space-y-2">
+              {list.map((it) => (
+                <Item
+                  key={it.id}
+                  item={it}
+                  config={config}
+                  itemBg={it.bgColor || cc.itemBg}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
 
-function Item({ item, config }: { item: FaqItem; config: FaqConfig }) {
+function Item({
+  item,
+  config,
+  itemBg,
+}: {
+  item: FaqItem;
+  config: FaqConfig;
+  itemBg?: string;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div
       className="overflow-hidden rounded-xl border transition-all"
-      style={{ borderColor: config.borderColor }}
+      style={{ borderColor: config.borderColor, background: itemBg }}
     >
       <button
         onClick={() => setOpen((v) => !v)}

@@ -4,12 +4,6 @@ import { Link } from "@tanstack/react-router";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
 
-/**
- * Acesso Restrito:
- * - Todas as perguntas aparecem para qualquer visitante.
- * - Itens com category começando com "🔒" ou contendo "private" são restritos:
- *   ao expandir, mostram um aviso "Faça login para acessar" com botão de login.
- */
 export function PrivateFaq({
   items,
   config,
@@ -51,10 +45,14 @@ function Item({
   locked: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const lockColor = config.lockColor || config.accentColor;
   return (
     <div
       className="overflow-hidden rounded-xl border"
-      style={{ borderColor: config.borderColor }}
+      style={{
+        borderColor: config.borderColor,
+        background: item.bgColor,
+      }}
     >
       <button
         onClick={() => setOpen((v) => !v)}
@@ -64,7 +62,11 @@ function Item({
           className="flex items-center gap-2 font-medium"
           style={{ color: config.questionColor }}
         >
-          {locked && <Lock className="h-3.5 w-3.5 opacity-70" />}
+          {locked && (
+            <span title="Faça login para acessar a FAQ">
+              <Lock className="h-3.5 w-3.5" style={{ color: lockColor }} />
+            </span>
+          )}
           {item.question}
         </span>
         <ChevronDown
@@ -82,14 +84,19 @@ function Item({
               className="flex flex-col items-start gap-3 rounded-lg border border-dashed p-4 text-sm"
               style={{
                 borderColor: config.borderColor,
+                background: config.loginBoxBg || "#f8fafc",
                 color: config.answerColor,
               }}
             >
-              <div className="flex items-center gap-2">
-                <Lock
-                  className="h-4 w-4"
-                  style={{ color: config.accentColor }}
+              {config.loginBoxLogoUrl && (
+                <img
+                  src={config.loginBoxLogoUrl}
+                  alt="Logo"
+                  className="h-8 w-auto object-contain"
                 />
+              )}
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4" style={{ color: lockColor }} />
                 <strong style={{ color: config.questionColor }}>
                   Conteúdo protegido
                 </strong>
