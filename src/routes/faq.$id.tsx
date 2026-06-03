@@ -14,7 +14,7 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/faq/$id")({
-  head: () => ({ meta: [{ title: "FAQ — Docspace.tec" }] }),
+  head: () => ({ meta: [{ title: "FAQ — DocSpace.tec" }] }),
   component: PublicFaq,
 });
 
@@ -33,6 +33,9 @@ function PublicFaq() {
   const { user, loading } = useAuth();
   const [row, setRow] = useState<Row | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const isEmbed =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("embed") === "1";
 
   useEffect(() => {
     (async () => {
@@ -46,9 +49,24 @@ function PublicFaq() {
     })();
   }, [id, user]);
 
+  // Post height to parent for iframe embed
+  useEffect(() => {
+    if (!isEmbed) return;
+    const post = () => {
+      window.parent.postMessage(
+        { type: "docspace:height", height: document.body.scrollHeight },
+        "*",
+      );
+    };
+    post();
+    const ro = new ResizeObserver(post);
+    ro.observe(document.body);
+    return () => ro.disconnect();
+  }, [isEmbed, row]);
+
   if (notFound)
     return (
-      <Shell>
+      <Shell embed={isEmbed}>
         <Empty
           icon={<Lock className="h-8 w-8" />}
           title="FAQ não encontrada ou privada"
@@ -59,14 +77,14 @@ function PublicFaq() {
 
   if (!row || loading)
     return (
-      <Shell>
+      <Shell embed={isEmbed}>
         <div className="py-20 text-center text-muted-foreground">Carregando…</div>
       </Shell>
     );
 
   return (
-    <Shell>
-      <h1 className="mb-6 text-3xl font-semibold">{row.title}</h1>
+    <Shell embed={isEmbed}>
+      {!isEmbed && <h1 className="mb-6 text-3xl font-semibold">{row.title}</h1>}
       <FaqRenderer
         template={row.template}
         items={row.items}
@@ -77,14 +95,17 @@ function PublicFaq() {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children, embed }: { children: React.ReactNode; embed?: boolean }) {
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="mx-auto max-w-3xl px-6 py-10">{children}</main>
+      {!embed && <AppHeader />}
+      <main className={embed ? "px-2 py-2" : "mx-auto max-w-3xl px-6 py-10"}>
+        {children}
+      </main>
     </div>
   );
 }
+
 
 function Empty({
   icon,

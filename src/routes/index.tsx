@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { FaqRenderer } from "@/components/FaqRenderer";
 import { TEMPLATE_META, DEFAULT_CONFIG, type TemplateKey } from "@/lib/faq-types";
 import { useState } from "react";
-import { ArrowRight, Layers, Share2, Image, Lock, Palette } from "lucide-react";
+import { ArrowRight, Layers, Share2, Image, Lock, Palette, ListOrdered, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Docspace.tec — Crie FAQs sanfona personalizadas" },
+      { title: "DocSpace.tec — Crie FAQs sanfona personalizadas" },
       {
         name: "description",
         content:
-          "5 modelos de FAQ sanfona com cores customizáveis, compartilhamento, mídia, acesso privado e branding.",
+          "7 modelos de FAQ sanfona com cores customizáveis, compartilhamento, mídia, acesso privado, numeração, datas comemorativas e API de integração.",
       },
     ],
   }),
@@ -24,15 +24,15 @@ const previewItems = [
   {
     id: "1",
     category: "Geral",
-    question: "Como funciona o Docspace.tec?",
+    question: "Como funciona o DocSpace.tec?",
     answer:
       "Escolha um modelo, personalize cores e conteúdo, e publique. Tudo no navegador.",
   },
   {
     id: "2",
     category: "Geral",
-    question: "Posso embeddar em outro site?",
-    answer: "Sim, cada FAQ tem URL pública e pode ser linkada de qualquer lugar.",
+    question: "Posso embeddar em outro site (WordPress, etc.)?",
+    answer: "Sim — via iframe, snippet JS ou API JSON pública.",
   },
   {
     id: "3",
@@ -48,7 +48,10 @@ const ICONS: Record<TemplateKey, React.ReactNode> = {
   "rich-media": <Image className="h-4 w-4" />,
   private: <Lock className="h-4 w-4" />,
   branded: <Palette className="h-4 w-4" />,
+  numbered: <ListOrdered className="h-4 w-4" />,
+  seasonal: <Sparkles className="h-4 w-4" />,
 };
+
 
 function Index() {
   const [active, setActive] = useState<TemplateKey>("categorized");
@@ -135,8 +138,10 @@ function Index() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        Feito com <span className="text-primary">♥</span> · Docspace.tec
+        Feito com <span className="text-primary">♥</span> · © DocSpace.tec — todos os direitos reservados ·{" "}
+        <a href="https://docspace.tec.br" className="underline" target="_blank" rel="noreferrer">docspace.tec.br</a>
       </footer>
     </div>
   );
 }
+

@@ -10,8 +10,9 @@ import {
   Image as ImageIcon,
   Video,
   Music,
-  Pencil,
   Info,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,23 +25,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { FaqRenderer } from "@/components/FaqRenderer";
 import { RichTextToolbar } from "@/components/RichTextToolbar";
 import {
   CODE_LANGUAGES,
   CODE_LAYOUTS,
+  SEASONAL_PRESETS,
   type CodeLayout,
   type CodeTheme,
   type FaqDocument,
   type FaqItem,
+  type SeasonalTheme,
   type TemplateKey,
   TEMPLATE_META,
 } from "@/lib/faq-types";
@@ -74,6 +70,19 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
     });
   const removeItem = (id: string) =>
     update({ items: doc.items.filter((it) => it.id !== id) });
+  const move = (id: string, dir: -1 | 1) => {
+    const arr = [...doc.items];
+    const i = arr.findIndex((x) => x.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    update({ items: arr });
+  };
+
+  // distinct categories (Categorizado)
+  const categories = Array.from(
+    new Set(doc.items.map((it) => it.category?.trim() || "Geral")),
+  );
 
   return (
     <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
@@ -149,10 +158,12 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
               <ItemCard
                 key={it.id}
                 index={i}
+                total={doc.items.length}
                 item={it}
                 template={doc.template}
                 onChange={(patch) => updateItem(it.id, patch)}
                 onRemove={() => removeItem(it.id)}
+                onMove={(d) => move(it.id, d)}
               />
             ))}
             <Button variant="outline" className="w-full" onClick={addItem}>
@@ -196,6 +207,107 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
                 update({ config: { ...doc.config, borderColor: v } })
               }
             />
+
+            {doc.template === "categorized" && categories.length > 0 && (
+              <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
+                <Label className="text-xs uppercase text-muted-foreground">
+                  Cores por categoria
+                </Label>
+                {categories.map((c) => {
+                  const cc = doc.config.categoryColors?.[c] || {};
+                  const setCC = (patch: Partial<typeof cc>) =>
+                    update({
+                      config: {
+                        ...doc.config,
+                        categoryColors: {
+                          ...(doc.config.categoryColors || {}),
+                          [c]: { ...cc, ...patch },
+                        },
+                      },
+                    });
+                  return (
+                    <div key={c} className="space-y-2 rounded-md border p-2">
+                      <div className="text-xs font-semibold">{c}</div>
+                      <ColorRow label="Fundo título" value={cc.bg || doc.config.accentColor} onChange={(v) => setCC({ bg: v })} />
+                      <ColorRow label="Texto título" value={cc.text || "#ffffff"} onChange={(v) => setCC({ text: v })} />
+                      <ColorRow label="Fundo perguntas" value={cc.itemBg || "#ffffff"} onChange={(v) => setCC({ itemBg: v })} />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {doc.template === "private" && (
+              <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
+                <Label className="text-xs uppercase text-muted-foreground">
+                  Acesso Restrito
+                </Label>
+                <ColorRow
+                  label="Cor do cadeado"
+                  value={doc.config.lockColor || doc.config.accentColor}
+                  onChange={(v) => update({ config: { ...doc.config, lockColor: v } })}
+                />
+                <ColorRow
+                  label="Fundo da caixa de login"
+                  value={doc.config.loginBoxBg || "#f8fafc"}
+                  onChange={(v) => update({ config: { ...doc.config, loginBoxBg: v } })}
+                />
+                <div className="space-y-1">
+                  <Label className="text-xs">Logo na caixa de login (URL)</Label>
+                  <Input
+                    placeholder="https://..."
+                    value={doc.config.loginBoxLogoUrl || ""}
+                    onChange={(e) =>
+                      update({
+                        config: { ...doc.config, loginBoxLogoUrl: e.target.value },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            )}
+
+            {doc.template === "seasonal" && (
+              <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
+                <Label className="text-xs uppercase text-muted-foreground">
+                  Data comemorativa
+                </Label>
+                <Select
+                  value={doc.config.seasonalTheme || "christmas"}
+                  onValueChange={(v) => {
+                    const t = v as SeasonalTheme;
+                    const p = SEASONAL_PRESETS[t];
+                    update({
+                      config: {
+                        ...doc.config,
+                        seasonalTheme: t,
+                        seasonalAccent: p.accent,
+                        seasonalSecondary: p.secondary,
+                        backgroundColor: p.bg,
+                      },
+                    });
+                  }}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(SEASONAL_PRESETS).map(([k, p]) => (
+                      <SelectItem key={k} value={k}>{p.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <ColorRow
+                  label="Cor principal"
+                  value={doc.config.seasonalAccent || "#c1121f"}
+                  onChange={(v) => update({ config: { ...doc.config, seasonalAccent: v } })}
+                />
+                <ColorRow
+                  label="Cor secundária"
+                  value={doc.config.seasonalSecondary || "#2d6a4f"}
+                  onChange={(v) => update({ config: { ...doc.config, seasonalSecondary: v } })}
+                />
+              </div>
+            )}
+
             {doc.template === "branded" && (
               <>
                 <div className="space-y-2">
@@ -264,15 +376,19 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
 function ItemCard({
   item,
   index,
+  total,
   template,
   onChange,
   onRemove,
+  onMove,
 }: {
   item: FaqItem;
   index: number;
+  total: number;
   template: TemplateKey;
   onChange: (patch: Partial<FaqItem>) => void;
   onRemove: () => void;
+  onMove: (dir: -1 | 1) => void;
 }) {
   const showCategory = template === "categorized" || template === "private";
   const showMedia = template === "rich-media";
@@ -284,11 +400,24 @@ function ItemCard({
           #{index + 1}
         </span>
         <div className="flex items-center gap-1">
-          <EditDialog
-            item={item}
-            template={template}
-            onChange={onChange}
-          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMove(-1)}
+            disabled={index === 0}
+            title="Mover para cima"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onMove(1)}
+            disabled={index === total - 1}
+            title="Mover para baixo"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+          </Button>
           <Button variant="ghost" size="sm" onClick={onRemove} title="Excluir">
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -312,6 +441,24 @@ function ItemCard({
         placeholder="Resposta (use a barra para negrito, itálico, sublinhado e link)"
         rows={3}
       />
+      <div className="flex items-center justify-between gap-2 rounded-md border border-dashed p-2">
+        <Label className="text-[11px] uppercase text-muted-foreground">
+          Cor de fundo desta pergunta
+        </Label>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={item.bgColor || "#ffffff"}
+            onChange={(e) => onChange({ bgColor: e.target.value })}
+            className="h-7 w-7 cursor-pointer rounded border"
+          />
+          {item.bgColor && (
+            <Button variant="ghost" size="sm" onClick={() => onChange({ bgColor: undefined })}>
+              limpar
+            </Button>
+          )}
+        </div>
+      </div>
       {showMedia && (
         <div className="space-y-2 rounded-md border border-dashed border-border p-2">
           <MediaInput
@@ -424,88 +571,16 @@ function MediaInput({
   );
 }
 
-/* ---------------- Edit dialog ---------------- */
-
-function EditDialog({
-  item,
-  template,
-  onChange,
-}: {
-  item: FaqItem;
-  template: TemplateKey;
-  onChange: (patch: Partial<FaqItem>) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" title="Editar em foco">
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Editar pergunta</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          {(template === "categorized" || template === "private") && (
-            <div className="space-y-1.5">
-              <Label>Categoria</Label>
-              <Input
-                value={item.category || ""}
-                onChange={(e) => onChange({ category: e.target.value })}
-              />
-            </div>
-          )}
-          <div className="space-y-1.5">
-            <Label>Pergunta</Label>
-            <Input
-              value={item.question}
-              onChange={(e) => onChange({ question: e.target.value })}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Resposta</Label>
-            <RichTextToolbar
-              value={item.answer}
-              onChange={(v) => onChange({ answer: v })}
-              rows={8}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={() => setOpen(false)}>Concluir</Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-/* ---------------- Helpers ---------------- */
-
 function RichMediaHelp() {
   return (
     <div className="space-y-1 rounded-lg border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground">
       <div className="flex items-center gap-1.5 font-medium text-foreground">
         <Info className="h-3.5 w-3.5" /> Mídias suportadas
       </div>
-      <p>
-        <strong>Imagem:</strong> .jpg, .png, .webp, .gif, .svg — recomendado até
-        2&nbsp;MB e 1600&nbsp;px de largura.
-      </p>
-      <p>
-        <strong>Vídeo:</strong> links do YouTube/Vimeo ou arquivos .mp4 / .webm
-        / .ogg — recomendado até 50&nbsp;MB.
-      </p>
-      <p>
-        <strong>Áudio:</strong> .mp3, .wav, .ogg, .m4a — recomendado até
-        20&nbsp;MB.
-      </p>
-      <p>
-        <strong>Código:</strong> escolha a linguagem (HTML, CSS, JS, TS,
-        Python, etc.), o layout (bloco, inline ou terminal) e o tema (claro ou
-        escuro).
-      </p>
+      <p><strong>Imagem:</strong> .jpg, .png, .webp, .gif, .svg — até 2&nbsp;MB e 1600&nbsp;px.</p>
+      <p><strong>Vídeo:</strong> YouTube/Vimeo ou .mp4/.webm/.ogg — até 50&nbsp;MB.</p>
+      <p><strong>Áudio:</strong> .mp3, .wav, .ogg, .m4a — até 20&nbsp;MB.</p>
+      <p><strong>Código:</strong> linguagem (HTML, CSS, JS, etc.), layout (bloco/inline/terminal) e tema.</p>
     </div>
   );
 }
