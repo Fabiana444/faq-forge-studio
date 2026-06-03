@@ -138,8 +138,10 @@ function Index() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        Feito com <span className="text-primary">♥</span> · Docspace.tec
+        Feito com <span className="text-primary">♥</span> · © DocSpace.tec — todos os direitos reservados ·{" "}
+        <a href="https://docspace.tec.br" className="underline" target="_blank" rel="noreferrer">docspace.tec.br</a>
       </footer>
     </div>
   );
 }
+
