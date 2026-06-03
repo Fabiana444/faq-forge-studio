@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as EmbedDotjsRouteImport } from './routes/embed[.]js'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -17,10 +18,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FaqIdRouteImport } from './routes/faq.$id'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBuilderIdRouteImport } from './routes/_authenticated/builder.$id'
+import { Route as ApiPublicFaqsIdRouteImport } from './routes/api/public/faqs.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedDotjsRoute = EmbedDotjsRouteImport.update({
+  id: '/embed.js',
+  path: '/embed.js',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -57,24 +64,33 @@ const AuthenticatedBuilderIdRoute = AuthenticatedBuilderIdRouteImport.update({
   path: '/builder/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicFaqsIdRoute = ApiPublicFaqsIdRouteImport.update({
+  id: '/api/public/faqs/$id',
+  path: '/api/public/faqs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
+  '/embed.js': typeof EmbedDotjsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/builder/$id': typeof AuthenticatedBuilderIdRoute
+  '/api/public/faqs/$id': typeof ApiPublicFaqsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
+  '/embed.js': typeof EmbedDotjsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/builder/$id': typeof AuthenticatedBuilderIdRoute
+  '/api/public/faqs/$id': typeof ApiPublicFaqsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +98,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
+  '/embed.js': typeof EmbedDotjsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/_authenticated/builder/$id': typeof AuthenticatedBuilderIdRoute
+  '/api/public/faqs/$id': typeof ApiPublicFaqsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,29 +111,35 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/docs'
+    | '/embed.js'
     | '/sitemap.xml'
     | '/dashboard'
     | '/faq/$id'
     | '/builder/$id'
+    | '/api/public/faqs/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/docs'
+    | '/embed.js'
     | '/sitemap.xml'
     | '/dashboard'
     | '/faq/$id'
     | '/builder/$id'
+    | '/api/public/faqs/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/docs'
+    | '/embed.js'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
     | '/faq/$id'
     | '/_authenticated/builder/$id'
+    | '/api/public/faqs/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -123,8 +147,10 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   DocsRoute: typeof DocsRoute
+  EmbedDotjsRoute: typeof EmbedDotjsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   FaqIdRoute: typeof FaqIdRoute
+  ApiPublicFaqsIdRoute: typeof ApiPublicFaqsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -134,6 +160,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed.js': {
+      id: '/embed.js'
+      path: '/embed.js'
+      fullPath: '/embed.js'
+      preLoaderRoute: typeof EmbedDotjsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -185,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuilderIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/faqs/$id': {
+      id: '/api/public/faqs/$id'
+      path: '/api/public/faqs/$id'
+      fullPath: '/api/public/faqs/$id'
+      preLoaderRoute: typeof ApiPublicFaqsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -207,9 +247,21 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   DocsRoute: DocsRoute,
+  EmbedDotjsRoute: EmbedDotjsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   FaqIdRoute: FaqIdRoute,
+  ApiPublicFaqsIdRoute: ApiPublicFaqsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
