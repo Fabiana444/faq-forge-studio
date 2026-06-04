@@ -65,7 +65,7 @@ function Index() {
         <div className="relative mx-auto max-w-6xl px-6 py-20 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            5 modelos · 100% personalizável
+            7 modelos · 100% personalizável
           </span>
           <h1 className="mt-6 text-balance text-5xl font-bold tracking-tight md:text-6xl">
             FAQs sanfona que{" "}
@@ -75,7 +75,7 @@ function Index() {
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg text-muted-foreground">
             Crie, personalize e compartilhe perguntas frequentes em minutos.
-            Escolha entre 5 modelos prontos, ajuste cores, adicione seu logo e
+            Escolha entre 7 modelos prontos, ajuste cores, adicione seu logo e
             controle quem pode ver.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
