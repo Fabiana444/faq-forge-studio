@@ -24,7 +24,7 @@ export const Route = createFileRoute("/api/public/faqs/$id")({
         );
         const { data, error } = await supabaseAdmin
           .from("faqs")
-          .select("id,title,template,config,items,visibility,updated_at")
+          .select("id,title,template,config,items,visibility,updated_at,user_id")
           .eq("id", params.id)
           .eq("visibility", "public")
           .maybeSingle();
