@@ -29,7 +29,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/dashboard" });
+    if (!loading && user) navigate({ to: "/pending" });
   }, [user, loading, navigate]);
 
   const onEmail = async (e: React.FormEvent) => {
