@@ -24,7 +24,7 @@ export const Route = createFileRoute("/api/public/faqs/$id")({
         );
         const { data, error } = await supabaseAdmin
           .from("faqs")
-          .select("id,title,template,config,items,visibility,updated_at")
+          .select("id,title,template,config,items,visibility,updated_at,user_id")
           .eq("id", params.id)
           .eq("visibility", "public")
           .maybeSingle();
@@ -45,7 +45,24 @@ export const Route = createFileRoute("/api/public/faqs/$id")({
             JSON.stringify({ error: "FAQ não encontrada ou privada" }),
             { status: 404, headers },
           );
-        return new Response(JSON.stringify(data), { status: 200, headers });
+
+        // Verifica se o dono tem acesso aprovado
+        const { data: owner } = await supabaseAdmin
+          .from("profiles")
+          .select("access_status")
+          .eq("id", (data as { user_id: string }).user_id)
+          .maybeSingle();
+        if (!owner || owner.access_status !== "approved") {
+          return new Response(
+            JSON.stringify({
+              error: "Conta do autor pendente ou suspensa. Entre em contato com o suporte do DocSpace.tec.",
+            }),
+            { status: 403, headers },
+          );
+        }
+
+        const { user_id: _omit, ...payload } = data as Record<string, unknown>;
+        return new Response(JSON.stringify(payload), { status: 200, headers });
       },
     },
   },

@@ -29,7 +29,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/dashboard" });
+    if (!loading && user) navigate({ to: "/pending" });
   }, [user, loading, navigate]);
 
   const onEmail = async (e: React.FormEvent) => {
@@ -40,7 +40,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+          options: { emailRedirectTo: `${window.location.origin}/pending` },
         });
         if (error) throw error;
         toast.success("Conta criada! Verifique seu e-mail.");
@@ -62,7 +62,7 @@ function AuthPage() {
   const onGoogle = async () => {
     setBusy(true);
     const r = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/dashboard",
+      redirect_uri: window.location.origin + "/pending",
     });
     if (r.error) {
       toast.error(r.error.message || "Falha no Google login");

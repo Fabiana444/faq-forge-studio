@@ -44,8 +44,21 @@ function PublicFaq() {
         .select("*")
         .eq("id", id)
         .maybeSingle();
-      if (!data) setNotFound(true);
-      else setRow(data as unknown as Row);
+      if (!data) {
+        setNotFound(true);
+        return;
+      }
+      // Verifica se o autor está aprovado (acesso pago/liberado)
+      const { data: owner } = await supabase
+        .from("profiles")
+        .select("access_status")
+        .eq("id", (data as unknown as Row).user_id)
+        .maybeSingle();
+      if (!owner || owner.access_status !== "approved") {
+        setNotFound(true);
+        return;
+      }
+      setRow(data as unknown as Row);
     })();
   }, [id, user]);
 

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PendingRouteImport } from './routes/pending'
 import { Route as EmbedDotjsRouteImport } from './routes/embed[.]js'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -17,12 +18,18 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FaqIdRouteImport } from './routes/faq.$id'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBuilderIdRouteImport } from './routes/_authenticated/builder.$id'
 import { Route as ApiPublicFaqsIdRouteImport } from './routes/api/public/faqs.$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmbedDotjsRoute = EmbedDotjsRouteImport.update({
@@ -59,6 +66,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedBuilderIdRoute = AuthenticatedBuilderIdRouteImport.update({
   id: '/builder/$id',
   path: '/builder/$id',
@@ -75,7 +87,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/embed.js': typeof EmbedDotjsRoute
+  '/pending': typeof PendingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/builder/$id': typeof AuthenticatedBuilderIdRoute
@@ -86,7 +100,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/embed.js': typeof EmbedDotjsRoute
+  '/pending': typeof PendingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/builder/$id': typeof AuthenticatedBuilderIdRoute
@@ -99,7 +115,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/docs': typeof DocsRoute
   '/embed.js': typeof EmbedDotjsRoute
+  '/pending': typeof PendingRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/faq/$id': typeof FaqIdRoute
   '/_authenticated/builder/$id': typeof AuthenticatedBuilderIdRoute
@@ -112,7 +130,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/embed.js'
+    | '/pending'
     | '/sitemap.xml'
+    | '/admin'
     | '/dashboard'
     | '/faq/$id'
     | '/builder/$id'
@@ -123,7 +143,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/embed.js'
+    | '/pending'
     | '/sitemap.xml'
+    | '/admin'
     | '/dashboard'
     | '/faq/$id'
     | '/builder/$id'
@@ -135,7 +157,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/docs'
     | '/embed.js'
+    | '/pending'
     | '/sitemap.xml'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/faq/$id'
     | '/_authenticated/builder/$id'
@@ -148,6 +172,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DocsRoute: typeof DocsRoute
   EmbedDotjsRoute: typeof EmbedDotjsRoute
+  PendingRoute: typeof PendingRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   FaqIdRoute: typeof FaqIdRoute
   ApiPublicFaqsIdRoute: typeof ApiPublicFaqsIdRoute
@@ -160,6 +185,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/embed.js': {
@@ -211,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/builder/$id': {
       id: '/_authenticated/builder/$id'
       path: '/builder/$id'
@@ -229,11 +268,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedBuilderIdRoute: typeof AuthenticatedBuilderIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedBuilderIdRoute: AuthenticatedBuilderIdRoute,
 }
@@ -248,6 +289,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DocsRoute: DocsRoute,
   EmbedDotjsRoute: EmbedDotjsRoute,
+  PendingRoute: PendingRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   FaqIdRoute: FaqIdRoute,
   ApiPublicFaqsIdRoute: ApiPublicFaqsIdRoute,
