@@ -52,7 +52,7 @@ function PublicFaq() {
       const { data: owner } = await supabase
         .from("profiles")
         .select("access_status")
-        .eq("id", (data as Row).user_id)
+        .eq("id", (data as unknown as Row).user_id)
         .maybeSingle();
       if (!owner || owner.access_status !== "approved") {
         setNotFound(true);
