@@ -7,16 +7,31 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function Layout() {
-  const { user, loading } = useAuth();
+  const { user, loading, profile } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/auth" });
-  }, [user, loading, navigate]);
+    if (loading) return;
+    if (!user) {
+      navigate({ to: "/auth" });
+      return;
+    }
+    // Admins always have access; non-approved go to /pending
+    if (profile && !profile.isAdmin && profile.accessStatus !== "approved") {
+      navigate({ to: "/pending" });
+    }
+  }, [user, loading, profile, navigate]);
 
-  if (loading || !user)
+  if (loading || !user || !profile)
     return (
       <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
         Carregando…
+      </div>
+    );
+
+  if (!profile.isAdmin && profile.accessStatus !== "approved")
+    return (
+      <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
+        Redirecionando…
       </div>
     );
 
