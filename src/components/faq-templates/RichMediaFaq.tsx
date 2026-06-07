@@ -3,6 +3,8 @@ import { ChevronDown, Code2, Copy } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { toast } from "sonner";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function RichMediaFaq({
   items,
