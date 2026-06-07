@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 const slug = (s: string) =>
   s
