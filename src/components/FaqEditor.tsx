@@ -468,7 +468,7 @@ function ItemCard({
           )}
         </div>
       </div>
-      <FontControls item={item} onChange={onChange} />
+      <FontControls item={item} onChange={onChange} customFonts={customFonts} />
 
       {showMedia && (
         <div className="space-y-2 rounded-md border border-dashed border-border p-2">
