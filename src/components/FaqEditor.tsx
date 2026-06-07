@@ -643,15 +643,15 @@ function FontControls({
       </Label>
       <div className="grid grid-cols-[1fr_72px] gap-2">
         <Select
-          value={item.questionFont || ""}
-          onValueChange={(v) => onChange({ questionFont: v || undefined })}
+          value={item.questionFont || "__default"}
+          onValueChange={(v) => onChange({ questionFont: v === "__default" ? undefined : v })}
         >
           <SelectTrigger className="h-8 text-xs">
             <SelectValue placeholder="Fonte da pergunta" />
           </SelectTrigger>
           <SelectContent className="max-h-72">
-            {WEB_FONTS.map((f) => (
-              <SelectItem key={"q-" + f.value} value={f.value}>
+            {allFonts.map((f) => (
+              <SelectItem key={"q-" + (f.value || "default")} value={f.value || "__default"}>
                 {f.label}
               </SelectItem>
             ))}
@@ -673,20 +673,21 @@ function FontControls({
       </div>
       <div className="grid grid-cols-[1fr_72px] gap-2">
         <Select
-          value={item.answerFont || ""}
-          onValueChange={(v) => onChange({ answerFont: v || undefined })}
+          value={item.answerFont || "__default"}
+          onValueChange={(v) => onChange({ answerFont: v === "__default" ? undefined : v })}
         >
           <SelectTrigger className="h-8 text-xs">
             <SelectValue placeholder="Fonte da resposta" />
           </SelectTrigger>
           <SelectContent className="max-h-72">
-            {WEB_FONTS.map((f) => (
-              <SelectItem key={"a-" + f.value} value={f.value}>
+            {allFonts.map((f) => (
+              <SelectItem key={"a-" + (f.value || "default")} value={f.value || "__default"}>
                 {f.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         <Input
           type="number"
           min={10}
