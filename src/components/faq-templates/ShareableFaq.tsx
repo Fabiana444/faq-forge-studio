@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 const slug = (s: string) =>
   s
@@ -116,10 +118,11 @@ function Item({ item, config }: { item: FaqItem; config: FaqConfig }) {
             href={`#${anchorId}`}
             onClick={(e) => e.stopPropagation()}
             className="font-medium hover:underline"
-            style={{ color: config.questionColor }}
+            style={mergeStyle({ color: config.questionColor }, itemFontStyle(item, "question"))}
           >
             {item.question}
           </a>
+
           <ChevronDown
             className="h-4 w-4 transition-transform"
             style={{
@@ -165,9 +168,10 @@ function Item({ item, config }: { item: FaqItem; config: FaqConfig }) {
           <RichText
             html={item.answer}
             className="text-sm leading-relaxed"
-            style={{ color: config.answerColor }}
+            style={mergeStyle({ color: config.answerColor }, itemFontStyle(item, "answer"))}
           />
         </div>
+
       )}
     </div>
   );

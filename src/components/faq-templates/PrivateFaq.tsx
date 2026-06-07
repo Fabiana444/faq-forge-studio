@@ -3,6 +3,8 @@ import { ChevronDown, Lock, LogIn } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function PrivateFaq({
   items,
@@ -60,8 +62,9 @@ function Item({
       >
         <span
           className="flex items-center gap-2 font-medium"
-          style={{ color: config.questionColor }}
+          style={mergeStyle({ color: config.questionColor }, itemFontStyle(item, "question"))}
         >
+
           {locked && (
             <span title="Faça login para acessar a FAQ">
               <Lock className="h-3.5 w-3.5" style={{ color: lockColor }} />
@@ -114,7 +117,8 @@ function Item({
             <RichText
               html={item.answer}
               className="text-sm leading-relaxed"
-              style={{ color: config.answerColor }}
+              style={mergeStyle({ color: config.answerColor }, itemFontStyle(item, "answer"))}
+
             />
           )}
         </div>

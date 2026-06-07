@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function CategorizedFaq({
   items,
@@ -74,7 +76,7 @@ function Item({
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
       >
-        <span className="font-medium" style={{ color: config.questionColor }}>
+        <span className="font-medium" style={mergeStyle({ color: config.questionColor }, itemFontStyle(item, "question"))}>
           {item.question}
         </span>
         <ChevronDown
@@ -89,9 +91,10 @@ function Item({
         <RichText
           html={item.answer}
           className="px-5 pb-5 text-sm leading-relaxed"
-          style={{ color: config.answerColor }}
+          style={mergeStyle({ color: config.answerColor }, itemFontStyle(item, "answer"))}
         />
       )}
+
     </div>
   );
 }

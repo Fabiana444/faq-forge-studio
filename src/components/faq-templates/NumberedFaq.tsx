@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function NumberedFaq({
   items,
@@ -52,7 +54,7 @@ function Item({
         </span>
         <span
           className="flex-1 font-medium"
-          style={{ color: config.questionColor }}
+          style={mergeStyle({ color: config.questionColor }, itemFontStyle(item, "question"))}
         >
           {item.question}
         </span>
@@ -68,9 +70,10 @@ function Item({
         <RichText
           html={item.answer}
           className="px-5 pb-5 pl-[4.5rem] text-sm leading-relaxed"
-          style={{ color: config.answerColor }}
+          style={mergeStyle({ color: config.answerColor }, itemFontStyle(item, "answer"))}
         />
       )}
+
     </li>
   );
 }

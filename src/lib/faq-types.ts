@@ -34,7 +34,21 @@ export interface FaqItem {
   codeLang?: string;
   codeLayout?: CodeLayout;
   codeTheme?: CodeTheme;
+  /** Tipografia individual (sobrescreve a do tema). */
+  questionFont?: string;
+  questionFontSize?: number;
+  answerFont?: string;
+  answerFontSize?: number;
 }
+
+export interface CustomFont {
+  name: string;
+  /** Data URL (data:font/woff2;base64,...) ou URL pública. */
+  url: string;
+  /** woff2 | woff | truetype | opentype */
+  format?: "woff2" | "woff" | "truetype" | "opentype";
+}
+
 
 export interface FaqConfig {
   accentColor: string;
@@ -57,7 +71,11 @@ export interface FaqConfig {
   seasonalTheme?: SeasonalTheme;
   seasonalAccent?: string;
   seasonalSecondary?: string;
+
+  /** Pacotes de fontes pagas/personalizadas enviadas pelo usuário. */
+  customFonts?: CustomFont[];
 }
+
 
 export interface FaqDocument {
   id?: string;

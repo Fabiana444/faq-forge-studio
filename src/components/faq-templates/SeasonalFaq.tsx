@@ -3,6 +3,8 @@ import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
 import { SEASONAL_PRESETS } from "@/lib/faq-types";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 /**
  * FAQ com decoração para datas comemorativas.
@@ -84,7 +86,7 @@ function Item({
       >
         <span
           className="font-semibold"
-          style={{ color: isDark ? "#fff" : config.questionColor }}
+          style={mergeStyle({ color: isDark ? "#fff" : config.questionColor }, itemFontStyle(item, "question"))}
         >
           {item.question}
         </span>
@@ -100,9 +102,10 @@ function Item({
         <RichText
           html={item.answer}
           className="px-5 pb-5 text-sm leading-relaxed"
-          style={{ color: isDark ? "rgba(255,255,255,0.85)" : config.answerColor }}
+          style={mergeStyle({ color: isDark ? "rgba(255,255,255,0.85)" : config.answerColor }, itemFontStyle(item, "answer"))}
         />
       )}
+
       <div
         className="h-1 w-full"
         style={{
