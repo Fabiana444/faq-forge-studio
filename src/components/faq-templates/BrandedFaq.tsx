@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function BrandedFaq({
   items,
