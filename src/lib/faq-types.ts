@@ -71,7 +71,11 @@ export interface FaqConfig {
   seasonalTheme?: SeasonalTheme;
   seasonalAccent?: string;
   seasonalSecondary?: string;
+
+  /** Pacotes de fontes pagas/personalizadas enviadas pelo usuário. */
+  customFonts?: CustomFont[];
 }
+
 
 export interface FaqDocument {
   id?: string;
