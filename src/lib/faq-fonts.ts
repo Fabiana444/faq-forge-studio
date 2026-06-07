@@ -107,14 +107,14 @@ export function FontsLoader({
       document.head.appendChild(style);
     }
     style.textContent = customFonts
-      .map((f) =>
-
+      .map(
         (f) =>
           `@font-face{font-family:"${f.name}";src:url("${f.url}") format("${
             f.format || "woff2"
           }");font-display:swap;}`,
       )
       .join("\n");
+
   }, [customFonts]);
 
   return null;
