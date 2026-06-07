@@ -117,7 +117,8 @@ function Item({
             <RichText
               html={item.answer}
               className="text-sm leading-relaxed"
-              style={{ color: config.answerColor }}
+              style={mergeStyle({ color: config.answerColor }, itemFontStyle(item, "answer"))}
+
             />
           )}
         </div>
