@@ -214,6 +214,15 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
               }
             />
 
+            <CustomFontsManager
+              fonts={doc.config.customFonts || []}
+              onChange={(fonts) =>
+                update({ config: { ...doc.config, customFonts: fonts } })
+              }
+            />
+
+
+
             {doc.template === "categorized" && categories.length > 0 && (
               <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
                 <Label className="text-xs uppercase text-muted-foreground">
