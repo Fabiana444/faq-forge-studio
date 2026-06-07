@@ -625,10 +625,17 @@ function ColorRow({
 function FontControls({
   item,
   onChange,
+  customFonts = [],
 }: {
   item: FaqItem;
   onChange: (patch: Partial<FaqItem>) => void;
+  customFonts?: CustomFont[];
 }) {
+  const allFonts = [
+    ...WEB_FONTS,
+    ...customFonts.map((f) => ({ value: f.name, label: `${f.name} (sua fonte)` })),
+  ];
+
   return (
     <div className="space-y-2 rounded-md border border-dashed p-2">
       <Label className="text-[11px] uppercase text-muted-foreground">
