@@ -107,7 +107,8 @@ export function FontsLoader({
       document.head.appendChild(style);
     }
     style.textContent = customFonts
-      .map(
+      .map((f) =>
+
         (f) =>
           `@font-face{font-family:"${f.name}";src:url("${f.url}") format("${
             f.format || "woff2"
