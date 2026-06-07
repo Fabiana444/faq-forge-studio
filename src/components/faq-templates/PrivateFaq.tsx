@@ -3,6 +3,8 @@ import { ChevronDown, Lock, LogIn } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 export function PrivateFaq({
   items,
