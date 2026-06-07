@@ -619,3 +619,166 @@ function ColorRow({
     </div>
   );
 }
+
+/* ---------------- Fontes ---------------- */
+
+function FontControls({
+  item,
+  onChange,
+}: {
+  item: FaqItem;
+  onChange: (patch: Partial<FaqItem>) => void;
+}) {
+  return (
+    <div className="space-y-2 rounded-md border border-dashed p-2">
+      <Label className="text-[11px] uppercase text-muted-foreground">
+        Tipografia
+      </Label>
+      <div className="grid grid-cols-[1fr_72px] gap-2">
+        <Select
+          value={item.questionFont || ""}
+          onValueChange={(v) => onChange({ questionFont: v || undefined })}
+        >
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Fonte da pergunta" />
+          </SelectTrigger>
+          <SelectContent className="max-h-72">
+            {WEB_FONTS.map((f) => (
+              <SelectItem key={"q-" + f.value} value={f.value}>
+                {f.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          type="number"
+          min={10}
+          max={48}
+          placeholder="px"
+          className="h-8 text-xs"
+          value={item.questionFontSize ?? ""}
+          onChange={(e) =>
+            onChange({
+              questionFontSize: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
+        />
+      </div>
+      <div className="grid grid-cols-[1fr_72px] gap-2">
+        <Select
+          value={item.answerFont || ""}
+          onValueChange={(v) => onChange({ answerFont: v || undefined })}
+        >
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Fonte da resposta" />
+          </SelectTrigger>
+          <SelectContent className="max-h-72">
+            {WEB_FONTS.map((f) => (
+              <SelectItem key={"a-" + f.value} value={f.value}>
+                {f.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          type="number"
+          min={10}
+          max={48}
+          placeholder="px"
+          className="h-8 text-xs"
+          value={item.answerFontSize ?? ""}
+          onChange={(e) =>
+            onChange({
+              answerFontSize: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+export function CustomFontsManager({
+  fonts,
+  onChange,
+}: {
+  fonts: CustomFont[];
+  onChange: (fonts: CustomFont[]) => void;
+}) {
+  const handleUpload = async (file: File) => {
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Arquivo muito grande (máx 4 MB)");
+      return;
+    }
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const format: CustomFont["format"] =
+      ext === "woff2"
+        ? "woff2"
+        : ext === "woff"
+          ? "woff"
+          : ext === "ttf"
+            ? "truetype"
+            : ext === "otf"
+              ? "opentype"
+              : "woff2";
+    const mime =
+      format === "woff2"
+        ? "font/woff2"
+        : format === "woff"
+          ? "font/woff"
+          : format === "truetype"
+            ? "font/ttf"
+            : "font/otf";
+    const buf = await file.arrayBuffer();
+    const b64 = btoa(
+      new Uint8Array(buf).reduce((acc, b) => acc + String.fromCharCode(b), ""),
+    );
+    const url = `data:${mime};base64,${b64}`;
+    const name = file.name.replace(/\.(woff2?|ttf|otf)$/i, "");
+    onChange([...fonts, { name, url, format }]);
+    toast.success(`Fonte "${name}" adicionada`);
+  };
+
+  return (
+    <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
+      <Label className="text-xs uppercase text-muted-foreground">
+        Fontes personalizadas (paid / branding)
+      </Label>
+      <p className="text-[11px] text-muted-foreground">
+        Envie .woff2, .woff, .ttf ou .otf (até 4 MB). A fonte fica disponível em
+        todos os seletores depois.
+      </p>
+      <input
+        type="file"
+        accept=".woff2,.woff,.ttf,.otf"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleUpload(f);
+          e.target.value = "";
+        }}
+        className="block w-full text-xs file:mr-2 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1 file:text-xs file:font-medium file:text-primary-foreground"
+      />
+      {fonts.length > 0 && (
+        <ul className="space-y-1 pt-2">
+          {fonts.map((f, i) => (
+            <li
+              key={i}
+              className="flex items-center justify-between rounded border px-2 py-1 text-xs"
+              style={{ fontFamily: `"${f.name}"` }}
+            >
+              <span>{f.name}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onChange(fonts.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
