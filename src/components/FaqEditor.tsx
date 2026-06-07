@@ -34,12 +34,16 @@ import {
   SEASONAL_PRESETS,
   type CodeLayout,
   type CodeTheme,
+  type CustomFont,
   type FaqDocument,
   type FaqItem,
   type SeasonalTheme,
   type TemplateKey,
   TEMPLATE_META,
 } from "@/lib/faq-types";
+import { WEB_FONTS } from "@/lib/faq-fonts";
+import { toast } from "sonner";
+
 
 interface Props {
   doc: FaqDocument;
