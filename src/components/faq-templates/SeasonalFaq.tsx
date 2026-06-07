@@ -3,6 +3,8 @@ import { ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
 import { SEASONAL_PRESETS } from "@/lib/faq-types";
+import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
+
 
 /**
  * FAQ com decoração para datas comemorativas.
