@@ -384,6 +384,7 @@ function ItemCard({
   index,
   total,
   template,
+  customFonts,
   onChange,
   onRemove,
   onMove,
@@ -392,10 +393,12 @@ function ItemCard({
   index: number;
   total: number;
   template: TemplateKey;
+  customFonts?: CustomFont[];
   onChange: (patch: Partial<FaqItem>) => void;
   onRemove: () => void;
   onMove: (dir: -1 | 1) => void;
 }) {
+
   const showCategory = template === "categorized" || template === "private";
   const showMedia = template === "rich-media";
 
