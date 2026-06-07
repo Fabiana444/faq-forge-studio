@@ -165,6 +165,7 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
                 total={doc.items.length}
                 item={it}
                 template={doc.template}
+                customFonts={doc.config.customFonts || []}
                 onChange={(patch) => updateItem(it.id, patch)}
                 onRemove={() => removeItem(it.id)}
                 onMove={(d) => move(it.id, d)}
@@ -173,6 +174,7 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
             <Button variant="outline" className="w-full" onClick={addItem}>
               <Plus className="mr-2 h-4 w-4" /> Adicionar pergunta
             </Button>
+
           </div>
         ) : (
           <div className="space-y-3">
