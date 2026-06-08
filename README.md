@@ -1,0 +1,1 @@
+DocSpace.tec é uma ferramenta SaaS para criar FAQs (perguntas frequentes) altamente personalizáveis, com 7 modelos profissionais, suporte a mídia rica, controle de acesso, decorações sazonais e distribuição via link público, iframe embed ou API JSON.
