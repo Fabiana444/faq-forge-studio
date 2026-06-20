@@ -4,11 +4,6 @@ import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
 import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
 
-/**
- * Fase 4: FAQ em formato de menu/lista com seleção lateral.
- * Perguntas aparecem como itens de menu à esquerda,
- * respostas aparecem em um painel à direita.
- */
 export function MenuFaq({
   items,
   config,
@@ -25,8 +20,8 @@ export function MenuFaq({
       className="rounded-2xl p-6"
       style={{ background: config.backgroundColor }}
     >
-      {/* Botão para abrir menu em mobile */}
       <button
+        type="button"
         onClick={() => setMenuOpen(!menuOpen)}
         className="mb-4 flex w-full items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 md:hidden"
       >
@@ -38,7 +33,6 @@ export function MenuFaq({
       </button>
 
       <div className="flex flex-col gap-4 md:flex-row">
-        {/* Menu lateral */}
         <div
           className={`w-full space-y-2 border-b border-border pb-4 md:max-w-xs md:border-b-0 md:border-r md:pb-0 md:pr-4 ${
             menuOpen ? "block" : "hidden md:block"
@@ -50,7 +44,11 @@ export function MenuFaq({
           {items.map((item) => (
             <button
               key={item.id}
-              onClick={() => setSelectedId(item.id)}
+              type="button"
+              onClick={() => {
+                setSelectedId(item.id);
+                setMenuOpen(false);
+              }}
               className="group flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-all"
               style={{
                 background: selectedId === item.id ? config.accentColor : "transparent",
@@ -73,7 +71,6 @@ export function MenuFaq({
           ))}
         </div>
 
-        {/* Painel de resposta */}
         <div className="w-full flex-1">
           {selected ? (
             <div className="space-y-3">
