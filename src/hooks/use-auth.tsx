@@ -10,6 +10,13 @@ interface ProfileInfo {
   displayName: string | null;
   email: string | null;
   requestReason: string | null;
+  termsAccepted: boolean;
+  limits: {
+    plan: string;
+    faqCount: number;
+    faqLimit: number;
+    trialEndsAt: string;
+  } | null;
 }
 
 interface AuthCtx {
@@ -36,13 +43,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileInfo | null>(null);
 
   const loadProfile = async (uid: string) => {
-    const [{ data: p }, { data: roles }] = await Promise.all([
+    const [{ data: p }, { data: roles }, { data: lim }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("access_status,display_name,email,request_reason")
+        .select("access_status,display_name,email,request_reason,terms_accepted")
         .eq("id", uid)
         .maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
+      supabase
+        .from("user_limits")
+        .select("plan,faq_count,faq_limit,trial_ends_at")
+        .eq("user_id", uid)
+        .maybeSingle(),
     ]);
     setProfile({
       accessStatus: (p?.access_status as AccessStatus) || "pending",
@@ -50,6 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       displayName: p?.display_name || null,
       email: p?.email || null,
       requestReason: p?.request_reason || null,
+      termsAccepted: !!p?.terms_accepted,
+      limits: lim ? {
+        plan: lim.plan,
+        faqCount: lim.faq_count,
+        faqLimit: lim.faq_limit,
+        trialEndsAt: lim.trial_ends_at,
+      } : null,
     });
   };
 

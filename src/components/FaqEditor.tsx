@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { FaqRenderer } from "@/components/FaqRenderer";
 import { RichTextToolbar } from "@/components/RichTextToolbar";
+import { useAuth } from "@/hooks/use-auth";
 import {
   CODE_LANGUAGES,
   CODE_LAYOUTS,
@@ -54,13 +55,28 @@ interface Props {
 }
 
 export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
+  const { profile } = useAuth();
   const [activeTab, setActiveTab] = useState<"content" | "style">("content");
   const update = (patch: Partial<FaqDocument>) => onChange({ ...doc, ...patch });
   const updateItem = (id: string, patch: Partial<FaqItem>) =>
     update({
       items: doc.items.map((it) => (it.id === id ? { ...it, ...patch } : it)),
     });
-  const addItem = () =>
+  const addItem = () => {
+    // Fase 2.1: Verificar limite de trial
+    if (profile?.limits) {
+      const { faqCount, faqLimit, plan } = profile.limits;
+      if (plan === "free" && faqCount >= faqLimit) {
+        toast.error("Limite de trial atingido (7 FAQs). Faça upgrade para criar mais.", {
+          action: {
+            label: "Ver Planos",
+            onClick: () => window.open("https://docspace.tec.br/pricing", "_blank"),
+          },
+        });
+        return;
+      }
+    }
+
     update({
       items: [
         ...doc.items,
@@ -72,6 +88,7 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
         },
       ],
     });
+  };
   const removeItem = (id: string) =>
     update({ items: doc.items.filter((it) => it.id !== id) });
   const move = (id: string, dir: -1 | 1) => {

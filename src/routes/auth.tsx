@@ -27,13 +27,31 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     if (!loading && user) navigate({ to: "/pending" });
   }, [user, loading, navigate]);
 
+  const validatePassword = (pass: string) => {
+    if (pass.length < 8) return "Mínimo 8 caracteres";
+    if (!/[A-Z]/.test(pass)) return "Mínimo 1 letra maiúscula";
+    if (!/[0-9]/.test(pass)) return "Mínimo 1 número";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pass)) return "Mínimo 1 caractere especial";
+    return "";
+  };
+
   const onEmail = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (mode === "signup") {
+      const err = validatePassword(password);
+      if (err) {
+        setPasswordError(err);
+        return;
+      }
+    }
+
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -49,23 +67,17 @@ function AuthPage() {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            throw new Error("E-mail ou senha incorretos");
+          }
+          throw error;
+        }
         toast.success("Bem-vindo!");
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro");
     } finally {
-      setBusy(false);
-    }
-  };
-
-  const onGoogle = async () => {
-    setBusy(true);
-    const r = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/pending",
-    });
-    if (r.error) {
-      toast.error(r.error.message || "Falha no Google login");
       setBusy(false);
     }
   };
@@ -86,12 +98,8 @@ function AuthPage() {
           </p>
         </div>
 
-        <Button variant="outline" onClick={onGoogle} disabled={busy}>
-          <GoogleIcon /> Continuar com Google
-        </Button>
-
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" /> ou <div className="h-px flex-1 bg-border" />
+        <div className="text-xs text-muted-foreground">
+          DocSpace.tec FAQ utiliza apenas login seguro por e-mail.
         </div>
 
         <form onSubmit={onEmail} className="space-y-3">
@@ -106,15 +114,39 @@ function AuthPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Senha</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Senha</Label>
+              {mode === "login" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!email) return toast.error("Digite seu e-mail primeiro");
+                    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                      redirectTo: `${window.location.origin}/auth?mode=reset`,
+                    });
+                    if (error) toast.error(error.message);
+                    else toast.success("E-mail de recuperação enviado!");
+                  }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
+              )}
+            </div>
             <Input
               id="password"
               type="password"
               required
-              minLength={6}
+              minLength={mode === "signup" ? 8 : 6}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (mode === "signup") setPasswordError(validatePassword(e.target.value));
+              }}
             />
+            {mode === "signup" && passwordError && (
+              <p className="text-[10px] text-destructive">{passwordError}</p>
+            )}
           </div>
           <Button type="submit" className="w-full" disabled={busy}>
             {mode === "login" ? "Entrar" : "Criar conta"}
