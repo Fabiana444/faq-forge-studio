@@ -5,7 +5,8 @@ export type TemplateKey =
   | "private"
   | "branded"
   | "numbered"
-  | "seasonal";
+  | "seasonal"
+  | "menu";
 
 export type CodeLayout = "block" | "inline" | "terminal";
 export type CodeTheme = "dark" | "light";
@@ -125,6 +126,11 @@ export const TEMPLATE_META: Record<
     description:
       "Decorações prontas (Natal, São João, Black Friday, Ano Novo, Dia dos Namorados, Halloween) com cores editáveis.",
   },
+  menu: {
+    name: "Menu Lateral",
+    description:
+      "Perguntas em menu à esquerda, respostas em painel à direita. Ideal para documentação e guias extensos.",
+  },
 };
 
 export const DEFAULT_CONFIG: FaqConfig = {
@@ -145,7 +151,7 @@ export const DEFAULT_ITEMS: FaqItem[] = [
     category: "Geral",
     question: "O que é esta ferramenta?",
     answer:
-      "Um gerador de FAQs inteligente com 7 modelos de sanfona prontos para usar.",
+      "Um gerador de FAQs inteligente com 8 modelos de sanfona prontos para usar.",
   },
   {
     id: "2",

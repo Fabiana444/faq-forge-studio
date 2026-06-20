@@ -6,6 +6,7 @@ import { PrivateFaq } from "./faq-templates/PrivateFaq";
 import { BrandedFaq } from "./faq-templates/BrandedFaq";
 import { NumberedFaq } from "./faq-templates/NumberedFaq";
 import { SeasonalFaq } from "./faq-templates/SeasonalFaq";
+import { MenuFaq } from "./faq-templates/MenuFaq";
 import { FontsLoader } from "@/lib/faq-fonts";
 
 export function FaqRenderer({
@@ -41,6 +42,8 @@ export function FaqRenderer({
         return <NumberedFaq items={items} config={config} />;
       case "seasonal":
         return <SeasonalFaq items={items} config={config} />;
+      case "menu":
+        return <MenuFaq items={items} config={config} />;
     }
   })();
   return (

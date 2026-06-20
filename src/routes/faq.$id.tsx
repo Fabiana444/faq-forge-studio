@@ -48,17 +48,37 @@ function PublicFaq() {
         setNotFound(true);
         return;
       }
-      // Verifica se o autor está aprovado (acesso pago/liberado)
-      const { data: owner } = await supabase
-        .from("profiles")
-        .select("access_status")
-        .eq("id", (data as unknown as Row).user_id)
-        .maybeSingle();
-      if (!owner || owner.access_status !== "approved") {
-        setNotFound(true);
+
+      const faqData = data as unknown as Row;
+
+      // Fase 3.1: Corrigir lógica de visibilidade
+      // Se a FAQ é PÚBLICA, qualquer pessoa pode ver
+      if (faqData.visibility === "public") {
+        // Mas ainda verifica se o autor está aprovado
+        const { data: owner } = await supabase
+          .from("profiles")
+          .select("access_status")
+          .eq("id", faqData.user_id)
+          .maybeSingle();
+        if (!owner || owner.access_status !== "approved") {
+          setNotFound(true);
+          return;
+        }
+        setRow(faqData);
         return;
       }
-      setRow(data as unknown as Row);
+
+      // Se a FAQ é PRIVADA, só o criador pode ver (com login)
+      if (faqData.visibility === "private") {
+        if (!user || user.id !== faqData.user_id) {
+          setNotFound(true);
+          return;
+        }
+        setRow(faqData);
+        return;
+      }
+
+      setNotFound(true);
     })();
   }, [id, user]);
 

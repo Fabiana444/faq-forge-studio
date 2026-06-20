@@ -20,6 +20,7 @@ function Builder() {
   const { id } = Route.useParams();
   const [doc, setDoc] = useState<FaqDocument | null>(null);
   const [saving, setSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -43,23 +44,41 @@ function Builder() {
     })();
   }, [id]);
 
+  // Fase 3.2: Auto-save a cada 30 segundos
+  useEffect(() => {
+    if (!doc) return;
+    const interval = setInterval(() => {
+      save();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [doc]);
+
   const save = async () => {
     if (!doc) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("faqs")
-      .update({
-        title: doc.title,
-        template: doc.template,
-        visibility: doc.visibility,
-        config: doc.config as any,
-        items: doc.items as any,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-    setSaving(false);
-    if (error) toast.error(error.message);
-    else toast.success("Salvo");
+    try {
+      const { error } = await supabase
+        .from("faqs")
+        .update({
+          title: doc.title,
+          template: doc.template,
+          visibility: doc.visibility,
+          config: doc.config as any,
+          items: doc.items as any,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", id);
+      setSaving(false);
+      if (error) {
+        toast.error("Erro ao salvar: " + error.message);
+      } else {
+        setLastSaved(new Date());
+        toast.success("Salvo com sucesso");
+      }
+    } catch (err) {
+      setSaving(false);
+      toast.error("Erro ao salvar: " + (err instanceof Error ? err.message : "Desconhecido"));
+    }
   };
 
   if (!doc)
@@ -77,12 +96,19 @@ function Builder() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <main className="mx-auto max-w-7xl px-6 py-8">
-        <Link
-          to="/dashboard"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Voltar
-        </Link>
+        <div className="mb-4 flex items-center justify-between">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Voltar
+          </Link>
+          {lastSaved && (
+            <span className="text-xs text-muted-foreground">
+              Última atualização: {lastSaved.toLocaleTimeString("pt-BR")}
+            </span>
+          )}
+        </div>
         <FaqEditor
           doc={doc}
           onChange={setDoc}
