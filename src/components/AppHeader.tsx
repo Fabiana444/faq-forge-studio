@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut, ShieldCheck } from "lucide-react";
 import { DocspaceLogo } from "@/components/DocspaceLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function AppHeader() {
   const { user, signOut, profile } = useAuth();
@@ -14,6 +15,7 @@ export function AppHeader() {
           <DocspaceLogo />
         </Link>
         <nav className="flex items-center gap-1 text-sm">
+          <ThemeToggle />
           <Link to="/docs" className="px-3 py-2 text-muted-foreground hover:text-foreground">
             Documentação
           </Link>

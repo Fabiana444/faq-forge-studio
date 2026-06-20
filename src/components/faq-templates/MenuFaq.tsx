@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import type { FaqConfig, FaqItem } from "@/lib/faq-types";
 import { RichText } from "@/components/RichText";
 import { itemFontStyle, mergeStyle } from "@/lib/faq-fonts";
@@ -17,15 +17,31 @@ export function MenuFaq({
   config: FaqConfig;
 }) {
   const [selectedId, setSelectedId] = useState<string>(items[0]?.id || "");
+  const [menuOpen, setMenuOpen] = useState(false);
   const selected = items.find((it) => it.id === selectedId);
 
   return (
     <div
-      className="flex gap-4 rounded-2xl p-6"
+      className="rounded-2xl p-6"
       style={{ background: config.backgroundColor }}
     >
-      {/* Menu lateral */}
-      <div className="w-full max-w-xs space-y-2 border-r border-border pr-4">
+      {/* Botão para abrir menu em mobile */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="mb-4 flex w-full items-center justify-between rounded-lg border border-border bg-muted px-3 py-2 md:hidden"
+      >
+        <span className="text-sm font-medium">Menu de perguntas</span>
+        <ChevronDown
+          className="h-4 w-4 transition-transform"
+          style={{ transform: menuOpen ? "rotate(180deg)" : "none" }}
+        />
+      </button>
+
+      <div className="flex flex-col gap-4 md:flex-row">
+        {/* Menu lateral */}
+        <div
+          className={`w-full space-y-2 border-b border-border pb-4 md:max-w-xs md:border-b-0 md:border-r md:pb-0 md:pr-4 ${menuOpen ? "block" : "hidden md:block"}`}
+        >
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Perguntas
         </h3>
@@ -55,8 +71,10 @@ export function MenuFaq({
         ))}
       </div>
 
-      {/* Painel de resposta */}
-      <div className="flex-1">
+        </div>
+
+        {/* Painel de resposta */}
+        <div className="w-full flex-1">
         {selected ? (
           <div className="space-y-3">
             <h2
@@ -90,6 +108,7 @@ export function MenuFaq({
             Selecione uma pergunta para ver a resposta
           </div>
         )}
+        </div>
       </div>
     </div>
   );

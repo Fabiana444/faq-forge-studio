@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FaqRenderer } from "@/components/FaqRenderer";
 import { RichTextToolbar } from "@/components/RichTextToolbar";
 import { useAuth } from "@/hooks/use-auth";
+import { LogoUpload } from "@/components/LogoUpload";
 import {
   CODE_LANGUAGES,
   CODE_LAYOUTS,
@@ -353,18 +354,15 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
                     }
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>URL do logo</Label>
-                  <Input
-                    placeholder="https://..."
-                    value={doc.config.logoUrl || ""}
-                    onChange={(e) =>
-                      update({
-                        config: { ...doc.config, logoUrl: e.target.value },
-                      })
-                    }
-                  />
-                </div>
+                <LogoUpload
+                  value={doc.config.logoUrl}
+                  onChange={(url) =>
+                    update({
+                      config: { ...doc.config, logoUrl: url },
+                    })
+                  }
+                  label="Logo da marca"
+                />
               </>
             )}
           </div>
