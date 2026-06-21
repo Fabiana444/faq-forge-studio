@@ -6,7 +6,8 @@ export type TemplateKey =
   | "branded"
   | "numbered"
   | "seasonal"
-  | "menu";
+  | "menu"
+  | "tabs";
 
 export type CodeLayout = "block" | "inline" | "terminal";
 export type CodeTheme = "dark" | "light";
@@ -131,6 +132,11 @@ export const TEMPLATE_META: Record<
     description:
       "Perguntas em menu à esquerda, respostas em painel à direita. Ideal para documentação e guias extensos.",
   },
+  tabs: {
+    name: "Menu Superior (Tabs)",
+    description:
+      "Organiza FAQs em abas no topo. Cada aba pode conter um dos outros 7 modelos de FAQ.",
+  },
 };
 
 export const DEFAULT_CONFIG: FaqConfig = {
@@ -151,7 +157,7 @@ export const DEFAULT_ITEMS: FaqItem[] = [
     category: "Geral",
     question: "O que é esta ferramenta?",
     answer:
-      "Um gerador de FAQs inteligente com 8 modelos de sanfona prontos para usar.",
+      "Um gerador de FAQs inteligente com 9 modelos de sanfona prontos para usar.",
   },
   {
     id: "2",

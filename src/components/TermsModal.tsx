@@ -12,11 +12,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function TermsModal() {
   const { user, profile, refreshProfile } = useAuth();
   const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [showFullPolicy, setShowFullPolicy] = useState(false);
 
   // Só mostra se estiver logado e ainda não aceitou os termos
   const open = !!user && profile !== null && !profile.termsAccepted;
@@ -43,48 +45,67 @@ export function TermsModal() {
 
   return (
     <Dialog open={open}>
-      <DialogContent className="max-w-md [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-2xl [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Termos de Uso do DocSpace.tec</DialogTitle>
+          <DialogTitle className="text-xl">Termos de Uso e Política de Privacidade</DialogTitle>
           <DialogDescription>
-            Para continuar usando nossa plataforma de FAQs, você precisa aceitar nossos termos de uso e política de privacidade.
+            Para garantir a segurança dos seus dados e a qualidade do nosso serviço, leia e aceite as condições abaixo.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="max-h-[300px] overflow-y-auto rounded-md border border-border p-4 text-sm text-muted-foreground">
-          <h3 className="mb-2 font-semibold text-foreground">1. Descrição do Serviço</h3>
-          <p className="mb-4">
-            O DocSpace.tec FAQ é uma ferramenta SaaS para criação e gestão de perguntas frequentes altamente personalizáveis.
-          </p>
-          
-          <h3 className="mb-2 font-semibold text-foreground">2. Planos e Trial</h3>
-          <p className="mb-4">
-            Oferecemos um plano gratuito de teste por 7 dias, limitado a 7 FAQs (1 de cada modelo). Planos pagos estão disponíveis por R$30,00/mês para uso ilimitado.
-          </p>
-          
-          <h3 className="mb-2 font-semibold text-foreground">3. Responsabilidade</h3>
-          <p className="mb-4">
-            O conteúdo das FAQs é de inteira responsabilidade do usuário. O DocSpace.tec não se responsabiliza por informações incorretas ou uso indevido da ferramenta.
-          </p>
-          
-          <h3 className="mb-2 font-semibold text-foreground">4. Cancelamento</h3>
-          <p>
-            Você pode cancelar sua assinatura a qualquer momento. Seus dados serão mantidos por 30 dias após o término da assinatura.
-          </p>
-          
-          <div className="mt-4">
-            <a 
-              href="https://docspace.tec.br/termos" 
-              target="_blank" 
-              rel="noreferrer"
-              className="text-primary underline"
-            >
-              Ler termos completos em nova aba
-            </a>
-          </div>
-        </div>
+        <ScrollArea className="h-[400px] rounded-md border border-border p-4 bg-muted/30">
+          <div className="space-y-6 text-sm text-foreground/90 leading-relaxed">
+            <section>
+              <h3 className="font-bold text-foreground">1. Definição do Serviço (DocSpace FAQ)</h3>
+              <p>O DocSpace.tec FAQ é uma plataforma de software como serviço (SaaS) que permite a criação, personalização e hospedagem de centrais de ajuda e FAQs interativas.</p>
+            </section>
 
-        <div className="flex items-start gap-3 py-4">
+            <section>
+              <h3 className="font-bold text-foreground">2. Planos e Assinaturas</h3>
+              <ul className="list-disc pl-4 space-y-2">
+                <li><strong>Plano Gratuito (Trial):</strong> Acesso por 7 dias, limitado a 1 FAQ por modelo (máximo 9 FAQs no total).</li>
+                <li><strong>Planos Pagos:</strong> Assinatura recorrente de R$30,00/mês para uso ilimitado das funcionalidades contratadas.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold text-foreground">3. LGPD e Privacidade de Dados</h3>
+              <p>Em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018):</p>
+              <ul className="list-disc pl-4 space-y-2">
+                <li><strong>Coleta:</strong> Coletamos e-mail, nome e número de celular para autenticação e segurança.</li>
+                <li><strong>Direito ao Esquecimento:</strong> Você pode solicitar a exclusão total de seus dados a qualquer momento através do suporte.</li>
+                <li><strong>Retenção:</strong> Após o cancelamento, os dados são mantidos por 30 dias antes da exclusão definitiva.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold text-foreground text-destructive">4. Proibições e Uso Indevido</h3>
+              <p>É estritamente proibido ao usuário:</p>
+              <ul className="list-disc pl-4 space-y-2">
+                <li>Publicar conteúdo ilegal, ofensivo, discriminatório ou que viole direitos autorais.</li>
+                <li>Utilizar a API para ataques de negação de serviço ou spam.</li>
+                <li>Tentar burlar as travas de segurança ou limites do plano trial.</li>
+                <li>Hospedar conteúdo malicioso (phishing) através das FAQs públicas.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold text-foreground">5. Responsabilidade e Backup</h3>
+              <p>O DocSpace.tec fornece a ferramenta técnica, mas o conteúdo é de responsabilidade exclusiva do usuário. Recomendamos a exportação regular de seus dados via API JSON, embora realizemos backups diários de segurança.</p>
+            </section>
+
+            <section>
+              <h3 className="font-bold text-foreground">6. Cancelamento e Reembolso</h3>
+              <p>O cancelamento pode ser feito a qualquer momento sem multa. Por se tratar de um serviço de consumo imediato, reembolsos são analisados individualmente conforme o Código de Defesa do Consumidor.</p>
+            </section>
+
+            <div className="pt-4 border-t border-border">
+              <p className="text-xs text-muted-foreground italic">Última atualização: 20 de Junho de 2026. © DocSpace.tec - Todos os direitos reservados.</p>
+            </div>
+          </div>
+        </ScrollArea>
+
+        <div className="flex items-start gap-3 py-2">
           <Checkbox 
             id="terms" 
             checked={accepted} 
@@ -92,19 +113,19 @@ export function TermsModal() {
           />
           <label 
             htmlFor="terms" 
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium leading-tight cursor-pointer"
           >
-            Li e aceito os Termos de Uso e Política de Privacidade do DocSpace.tec FAQ.
+            Li e concordo integralmente com os Termos de Uso e a Política de Privacidade (LGPD) do DocSpace.tec.
           </label>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sm:justify-start">
           <Button 
-            className="w-full" 
+            className="w-full h-11 text-base font-semibold" 
             disabled={!accepted || busy} 
             onClick={handleAccept}
           >
-            {busy ? "Processando..." : "Aceitar e Continuar"}
+            {busy ? "Processando..." : "Aceitar e Começar Agora"}
           </Button>
         </DialogFooter>
       </DialogContent>

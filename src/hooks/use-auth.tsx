@@ -11,6 +11,9 @@ interface ProfileInfo {
   email: string | null;
   requestReason: string | null;
   termsAccepted: boolean;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  phone: string | null;
   limits: {
     plan: string;
     faqCount: number;
@@ -46,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [{ data: p }, { data: roles }, { data: lim }] = await Promise.all([
       supabase
         .from("profiles")
-        .select("access_status,display_name,email,request_reason,terms_accepted")
+        .select("access_status,display_name,email,request_reason,terms_accepted,email_verified,phone_verified,phone")
         .eq("id", uid)
         .maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
@@ -63,6 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: p?.email || null,
       requestReason: p?.request_reason || null,
       termsAccepted: !!p?.terms_accepted,
+      emailVerified: !!p?.email_verified,
+      phoneVerified: !!p?.phone_verified,
+      phone: p?.phone || null,
       limits: lim ? {
         plan: lim.plan,
         faqCount: lim.faq_count,

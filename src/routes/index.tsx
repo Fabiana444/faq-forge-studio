@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FaqRenderer } from "@/components/FaqRenderer";
 import { TEMPLATE_META, DEFAULT_CONFIG, type TemplateKey } from "@/lib/faq-types";
 import { useState } from "react";
-import { ArrowRight, Layers, Share2, Image, Lock, Palette, ListOrdered, Sparkles } from "lucide-react";
+import { ArrowRight, Layers, Share2, Image, Lock, Palette, ListOrdered, Sparkles, LayoutPanelLeft, LayoutPanelTop } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "7 modelos de FAQ sanfona com cores customizáveis, compartilhamento, mídia, acesso privado, numeração, datas comemorativas e API de integração.",
+          "9 modelos de FAQ sanfona com cores customizáveis, compartilhamento, mídia, acesso privado, numeração, datas comemorativas e API de integração.",
       },
     ],
   }),
@@ -50,6 +50,8 @@ const ICONS: Record<TemplateKey, React.ReactNode> = {
   branded: <Palette className="h-4 w-4" />,
   numbered: <ListOrdered className="h-4 w-4" />,
   seasonal: <Sparkles className="h-4 w-4" />,
+  menu: <LayoutPanelLeft className="h-4 w-4" />,
+  tabs: <LayoutPanelTop className="h-4 w-4" />,
 };
 
 
@@ -65,7 +67,7 @@ function Index() {
         <div className="relative mx-auto max-w-6xl px-6 py-20 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            7 modelos · 100% personalizável
+            9 modelos · 100% personalizável
           </span>
           <h1 className="mt-6 text-balance text-5xl font-bold tracking-tight md:text-6xl">
             FAQs sanfona que{" "}
@@ -75,7 +77,7 @@ function Index() {
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg text-muted-foreground">
             Crie, personalize e compartilhe perguntas frequentes em minutos.
-            Escolha entre 7 modelos prontos, ajuste cores, adicione seu logo e
+            Escolha entre 9 modelos prontos, ajuste cores, adicione seu logo e
             controle quem pode ver.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

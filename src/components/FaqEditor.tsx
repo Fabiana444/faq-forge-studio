@@ -365,6 +365,44 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
                 />
               </>
             )}
+
+            {doc.template === "tabs" && (
+              <div className="space-y-4 rounded-lg border border-dashed border-border p-3">
+                <Label className="text-xs uppercase text-muted-foreground">
+                  Configuração de Abas
+                </Label>
+                {Array.from(new Set(doc.items.map((it) => it.category || "Geral"))).map((cat) => (
+                  <div key={cat} className="space-y-1.5">
+                    <Label className="text-[10px] font-medium">{cat}</Label>
+                    <Select
+                      value={(doc.config as any).tabTemplates?.[cat] || "categorized"}
+                      onValueChange={(v) => {
+                        const currentTabs = (doc.config as any).tabTemplates || {};
+                        update({
+                          config: {
+                            ...doc.config,
+                            tabTemplates: { ...currentTabs, [cat]: v },
+                          } as any,
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(TEMPLATE_META)
+                          .filter(([k]) => k !== "menu" && k !== "tabs")
+                          .map(([k, meta]) => (
+                            <SelectItem key={k} value={k} className="text-xs">
+                              {meta.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
