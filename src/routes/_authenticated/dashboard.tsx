@@ -26,45 +26,88 @@ function Dashboard() {
   const navigate = useNavigate();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const load = async () => {
+    if (!user?.id) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("faqs")
-      .select("id,title,template,visibility,updated_at")
-      .order("updated_at", { ascending: false });
-    if (error) toast.error(error.message);
-    setRows((data as Row[]) || []);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from("faqs")
+        .select("id,title,template,visibility,updated_at")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false });
+      
+      if (error) {
+        toast.error("Erro ao carregar FAQs: " + error.message);
+        setRows([]);
+      } else {
+        setRows((data as Row[]) || []);
+      }
+    } catch (err) {
+      toast.error("Erro ao carregar FAQs");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    if (user?.id) load();
+  }, [user?.id]);
 
   const create = async () => {
-    const { data, error } = await supabase
-      .from("faqs")
-      .insert({
-        user_id: user!.id,
-        title: "Minha FAQ",
-        template: "categorized",
-        visibility: "public",
-        config: DEFAULT_CONFIG as any,
-        items: DEFAULT_ITEMS as any,
-      })
-      .select("id")
-      .single();
-    if (error) return toast.error(error.message);
-    navigate({ to: "/builder/$id", params: { id: data.id } });
+    if (!user?.id) return;
+    try {
+      const { data, error } = await supabase
+        .from("faqs")
+        .insert({
+          user_id: user.id,
+          title: "Minha FAQ",
+          template: "categorized",
+          visibility: "public",
+          config: DEFAULT_CONFIG as any,
+          items: DEFAULT_ITEMS as any,
+        })
+        .select("id")
+        .single();
+      
+      if (error) {
+        toast.error("Erro ao criar FAQ: " + error.message);
+        return;
+      }
+      
+      navigate({ to: "/builder/$id", params: { id: data.id } });
+    } catch (err) {
+      toast.error("Erro ao criar FAQ");
+    }
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Excluir esta FAQ?")) return;
-    const { error } = await supabase.from("faqs").delete().eq("id", id);
-    if (error) return toast.error(error.message);
-    toast.success("Excluída");
-    load();
+    if (!confirm("Tem certeza que deseja excluir esta FAQ? Esta ação não pode ser desfeita.")) return;
+    
+    setDeleting(id);
+    try {
+      const { error } = await supabase
+        .from("faqs")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user!.id);
+      
+      if (error) {
+        toast.error("Erro ao excluir: " + error.message);
+        setDeleting(null);
+        return;
+      }
+      
+      // Remover do estado local imediatamente
+      setRows(rows.filter(r => r.id !== id));
+      toast.success("FAQ excluída com sucesso");
+    } catch (err) {
+      toast.error("Erro inesperado ao excluir FAQ");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -125,8 +168,9 @@ function Dashboard() {
                   variant="ghost"
                   size="sm"
                   onClick={() => remove(r.id)}
+                  disabled={deleting === r.id}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className={`h-4 w-4 ${deleting === r.id ? "opacity-50" : ""}`} />
                 </Button>
               </div>
             ))}

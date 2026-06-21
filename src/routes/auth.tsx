@@ -116,6 +116,9 @@ function AuthPage() {
           if (error.message.includes("already registered")) {
             throw new Error("Este e-mail já está cadastrado");
           }
+          if (error.message.includes("rate limit") || error.message.includes("too many")) {
+            throw new Error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
+          }
           throw error;
         }
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
@@ -132,6 +135,9 @@ function AuthPage() {
           if (error.message.includes("Invalid login credentials")) {
             throw new Error("E-mail ou senha incorretos");
           }
+          if (error.message.includes("rate limit") || error.message.includes("too many")) {
+            throw new Error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
+          }
           throw error;
         }
         toast.success("Bem-vindo!");
@@ -144,6 +150,9 @@ function AuthPage() {
         if (error) {
           if (error.message.includes("not found")) {
             throw new Error("E-mail não encontrado");
+          }
+          if (error.message.includes("rate limit") || error.message.includes("too many")) {
+            throw new Error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
           }
           throw error;
         }

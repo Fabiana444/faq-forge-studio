@@ -47,7 +47,7 @@ export function TermsModal() {
     <Dialog open={open}>
       <DialogContent className="max-w-2xl [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-xl">Termos de Uso e Política de Privacidade</DialogTitle>
+          <DialogTitle className="text-xl">Termos de Uso - DocSpace FAQ</DialogTitle>
           <DialogDescription>
             Para garantir a segurança dos seus dados e a qualidade do nosso serviço, leia e aceite as condições abaixo.
           </DialogDescription>
@@ -115,7 +115,7 @@ export function TermsModal() {
             htmlFor="terms" 
             className="text-sm font-medium leading-tight cursor-pointer"
           >
-            Li e concordo integralmente com os Termos de Uso e a Política de Privacidade (LGPD) do DocSpace.tec.
+            Li e concordo integralmente com os Termos de Uso e a Política de Privacidade (LGPD) do DocSpace FAQ.
           </label>
         </div>
 
