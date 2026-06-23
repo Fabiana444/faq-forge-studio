@@ -106,10 +106,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth?mode=verify-email`,
-            data: {
-              email_verified: false,
-            },
+            emailRedirectTo: `${window.location.origin}/dashboard`,
           },
         });
         if (error) {
@@ -121,7 +118,7 @@ function AuthPage() {
           }
           throw error;
         }
-        toast.success("Conta criada! Verifique seu e-mail para confirmar.");
+        toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.");
         setMode("login");
         setEmail("");
         setPassword("");

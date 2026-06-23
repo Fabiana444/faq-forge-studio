@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 import { TermsModal } from "@/components/TermsModal";
-import { VerificationOverlay } from "@/components/VerificationOverlay";
 
 function NotFoundComponent() {
   return (
@@ -127,7 +126,6 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <TermsModal />
-        <VerificationOverlay />
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>
