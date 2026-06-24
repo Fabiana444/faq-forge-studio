@@ -31,6 +31,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -107,6 +108,9 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: {
+              full_name: fullName,
+            },
           },
         });
         if (error) {
@@ -121,6 +125,7 @@ function AuthPage() {
         toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.");
         setMode("login");
         setEmail("");
+        setFullName("");
         setPassword("");
         setConfirmPassword("");
       } else if (mode === "login") {
@@ -187,6 +192,21 @@ function AuthPage() {
         </div>
 
         <form onSubmit={onSubmit} className="space-y-3">
+          {/* Nome Completo (apenas no signup) */}
+          {mode === "signup" && (
+            <div className="space-y-1.5">
+              <Label htmlFor="fullname">Nome Completo</Label>
+              <Input
+                id="fullname"
+                type="text"
+                required
+                placeholder="Seu nome completo"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
+          )}
+
           {/* E-mail */}
           <div className="space-y-1.5">
             <Label htmlFor="email">E-mail</Label>

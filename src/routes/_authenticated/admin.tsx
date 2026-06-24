@@ -30,16 +30,24 @@ interface Profile {
   decided_at: string | null;
 }
 
+const ADMIN_EMAILS = [
+  "fabinonjah@gmail.com",
+  "fnonjah@yahoo.com.br",
+  "fabiana.nonjah@gmail.com",
+];
+
 function AdminPage() {
-  const { profile, loading } = useAuth();
+  const { profile, loading, user } = useAuth();
   const navigate = useNavigate();
   const [rows, setRows] = useState<Profile[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [tab, setTab] = useState<"pending" | "approved" | "rejected">("pending");
 
   useEffect(() => {
-    if (!loading && profile && !profile.isAdmin) navigate({ to: "/dashboard" });
-  }, [loading, profile, navigate]);
+    if (!loading && (!user?.email || !ADMIN_EMAILS.includes(user.email))) {
+      navigate({ to: "/dashboard" });
+    }
+  }, [loading, user, navigate]);
 
   const load = async () => {
     const { data, error } = await supabase
@@ -71,7 +79,7 @@ function AdminPage() {
 
   const filtered = rows.filter((r) => r.access_status === tab);
 
-  if (loading || !profile?.isAdmin)
+  if (loading || !user?.email || !ADMIN_EMAILS.includes(user.email))
     return (
       <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
         Carregando…
@@ -91,9 +99,9 @@ function AdminPage() {
         <div className="mb-8 flex items-center gap-3">
           <ShieldCheck className="h-7 w-7 text-primary" />
           <div>
-            <h1 className="text-2xl font-semibold">Painel administrativo</h1>
+            <h1 className="text-2xl font-semibold">Painel Administrativo</h1>
             <p className="text-sm text-muted-foreground">
-              Aprove, recuse ou revogue o acesso de quem solicitou usar o DocSpace.tec.
+              Aprove, recuse ou revogue o acesso de quem solicitou usar o DocSpace FAQ.
             </p>
           </div>
         </div>
@@ -109,6 +117,9 @@ function AdminPage() {
             <TabsTrigger value="rejected">
               <UserX className="mr-1.5 h-4 w-4" /> Recusados ({counts.rejected})
             </TabsTrigger>
+            <div className="ml-auto text-xs text-muted-foreground">
+              Acesso restrito a administradores
+            </div>
           </TabsList>
 
           <TabsContent value={tab} className="mt-4">
