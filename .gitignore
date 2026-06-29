@@ -30,3 +30,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Claude Code (agente local)
+.claude/
+
+# Variáveis sensíveis
+.env
+.env.backup
+
+# Supabase local temporário
+supabase/.temp/
+supabase/config.toml.backup
+
+# Arquivos de teste e automação local
+*.bat
+*.ps1
