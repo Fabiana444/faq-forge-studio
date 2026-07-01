@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { FaqEditor } from "@/components/FaqEditor";
@@ -44,14 +45,14 @@ function Builder() {
     })();
   }, [id]);
 
-  // Fase 3.2: Auto-save a cada 30 segundos
+  // Auto-save a cada 30 segundos
   useEffect(() => {
     if (!doc) return;
     const interval = setInterval(() => {
       save();
     }, 30000);
     return () => clearInterval(interval);
-  }, [doc]);
+  }, [doc, publicUrl]);
 
   const save = async () => {
     if (!doc) return;
@@ -65,6 +66,7 @@ function Builder() {
           visibility: doc.visibility,
           config: doc.config as any,
           items: doc.items as any,
+          canonical_url: publicUrl,
           updated_at: new Date().toISOString(),
         })
         .eq("id", id);
@@ -91,6 +93,19 @@ function Builder() {
 
   const publicUrl =
     typeof window !== "undefined" ? `${window.location.origin}/faq/${id}` : "";
+
+  // Sincronizar URL canônica ao carregar
+  useEffect(() => {
+    if (doc && publicUrl) {
+      const updateCanonical = async () => {
+        await supabase
+          .from("faqs")
+          .update({ canonical_url: publicUrl })
+          .eq("id", id);
+      };
+      updateCanonical();
+    }
+  }, [id, publicUrl]);
 
   return (
     <div className="min-h-screen bg-background">

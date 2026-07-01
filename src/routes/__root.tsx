@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 import { TermsModal } from "@/components/TermsModal";
+import { Footer } from "@/components/Footer";
 
 function NotFoundComponent() {
   return (
@@ -124,7 +125,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Outlet />
+        <div className="flex flex-col min-h-screen">
+          <Outlet />
+          <Footer />
+        </div>
         <TermsModal />
         <Toaster />
       </AuthProvider>

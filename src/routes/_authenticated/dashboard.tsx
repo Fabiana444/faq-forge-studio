@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, Lock, Globe, Trash2 } from "lucide-react";
+import { Plus, FileText, Lock, Globe, Trash2, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { DEFAULT_CONFIG, DEFAULT_ITEMS, TEMPLATE_META } from "@/lib/faq-types";
 import { toast } from "sonner";
 
@@ -19,6 +20,7 @@ interface Row {
   template: string;
   visibility: string;
   updated_at: string;
+  canonical_url?: string;
 }
 
 function Dashboard() {
@@ -27,6 +29,7 @@ function Dashboard() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const load = async () => {
     if (!user?.id) return;
@@ -34,7 +37,7 @@ function Dashboard() {
     try {
       const { data, error } = await supabase
         .from("faqs")
-        .select("id,title,template,visibility,updated_at")
+        .select("id,title,template,visibility,updated_at,canonical_url")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
       
@@ -114,16 +117,27 @@ function Dashboard() {
     <div className="min-h-screen bg-background">
       <AppHeader />
       <main className="mx-auto max-w-6xl px-6 py-10">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold">Minhas FAQs</h1>
-            <p className="text-sm text-muted-foreground">
-              Gerencie e edite suas perguntas frequentes
-            </p>
+        <div className="mb-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold">Minhas FAQs</h1>
+              <p className="text-sm text-muted-foreground">
+                Gerencie e edite suas perguntas frequentes
+              </p>
+            </div>
+            <Button onClick={create}>
+              <Plus className="mr-2 h-4 w-4" /> Nova FAQ
+            </Button>
           </div>
-          <Button onClick={create}>
-            <Plus className="mr-2 h-4 w-4" /> Nova FAQ
-          </Button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Pesquisar FAQs por título..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
 
         {loading ? (
@@ -141,7 +155,9 @@ function Dashboard() {
           </div>
         ) : (
           <div className="grid gap-3">
-            {rows.map((r) => (
+            {rows
+              .filter((r) => r.title.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map((r) => (
               <div
                 key={r.id}
                 className="flex items-center justify-between rounded-xl border border-border bg-card p-4 transition hover:shadow-[var(--shadow-soft)]"
@@ -163,6 +179,13 @@ function Dashboard() {
                       {r.visibility}
                     </span>
                   </div>
+                  {r.canonical_url && (
+                    <div className="mt-2 text-xs text-primary hover:underline">
+                      <a href={r.canonical_url} target="_blank" rel="noreferrer">
+                        {r.canonical_url}
+                      </a>
+                    </div>
+                  )}
                 </Link>
                 <Button
                   variant="ghost"

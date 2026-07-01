@@ -412,10 +412,12 @@ export function FaqEditor({ doc, onChange, onSave, saving, publicUrl }: Props) {
             {saving ? "Salvando..." : "Salvar"}
           </Button>
           {publicUrl && (
-            <Button variant="outline" asChild>
-              <a href={publicUrl} target="_blank" rel="noreferrer">
-                <ExternalLink className="h-4 w-4" />
-              </a>
+            <Button 
+              variant="outline" 
+              onClick={() => window.open(publicUrl, "_blank")}
+              title="Abrir em nova guia"
+            >
+              <ExternalLink className="h-4 w-4" />
             </Button>
           )}
         </div>
