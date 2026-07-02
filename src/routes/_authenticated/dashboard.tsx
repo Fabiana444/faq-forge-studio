@@ -20,7 +20,6 @@ interface Row {
   template: string;
   visibility: string;
   updated_at: string;
-  canonical_url?: string;
 }
 
 function Dashboard() {
@@ -37,7 +36,7 @@ function Dashboard() {
     try {
       const { data, error } = await supabase
         .from("faqs")
-        .select("id,title,template,visibility,updated_at,canonical_url")
+        .select("id,title,template,visibility,updated_at")
         .eq("user_id", user.id)
         .order("updated_at", { ascending: false });
       
@@ -179,13 +178,7 @@ function Dashboard() {
                       {r.visibility}
                     </span>
                   </div>
-                  {r.canonical_url && (
-                    <div className="mt-2 text-xs text-primary hover:underline">
-                      <a href={r.canonical_url} target="_blank" rel="noreferrer">
-                        {r.canonical_url}
-                      </a>
-                    </div>
-                  )}
+
                 </Link>
                 <Button
                   variant="ghost"
